@@ -1,6 +1,6 @@
 # Model Store
 
-
+Mattermost Chat link https://chat.es.uni-due.de/signup_user_complete/?id=aotkbo1nutr4fkp6op7r7u3dih
 
 ## Getting started
 
