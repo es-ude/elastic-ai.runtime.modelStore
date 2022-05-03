@@ -1,1 +1,3 @@
-from ModelBuffer import ModelBuffer
+from . import store_connection
+
+from .ModelBuffer import ModelBuffer
