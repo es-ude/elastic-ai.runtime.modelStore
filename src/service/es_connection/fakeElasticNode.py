@@ -7,7 +7,7 @@ nodeId = 1
 # Struktur: <nodeId>$<wantedModel>
 
 seperator = "$"
-wantedModel = "Model 1"
+wantedModel = "hello_world"
 message = str(nodeId)+seperator+wantedModel
 
 def deliver(client, userdata, message):
