@@ -66,7 +66,7 @@ converter.representative_dataset = representative_dataset
 model_tflite = converter.convert()
 
 with open(MODEL_TFLITE, "wb") as f:
-   f..write(model_tflite)
+   f.write(model_tflite)
 
 
 # log and register model
