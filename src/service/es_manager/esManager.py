@@ -19,9 +19,11 @@ class esManager:
 	def _on_message_service(self, client, userdata, message):
 		nodeId = self._getNodeFromMessage(message)
 		wantedModel = self._getModelFromMessage(message)
-	
+		print("esManager: ElasticNode requested"+wantedModel)
+		
 		elastic_node = esConnection(nodeId,self._serviceCommands)
 		model = elastic_node.connectForSearch(wantedModel)
+		print("esManager: sending requested Model to ElasticNode")
 		elastic_node.serveModel(model)
 		
 	def waitForElasticNode(self):
