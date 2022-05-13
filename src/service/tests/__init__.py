@@ -1,1 +1,2 @@
 from .test_client_connection import test_clientConnection
+from .integration_test_client_connection import IntegrationTest_clientConnection
