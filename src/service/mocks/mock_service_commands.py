@@ -1,5 +1,6 @@
 class mockModel():
-    files={"model.flite":None}
+    #files={"model.flite":None}
+    files={"model.flite":0}
     def __init__(self):
         pass
 

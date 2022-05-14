@@ -13,22 +13,21 @@ class IntegrationTest_clientConnection(unittest.TestCase):
         self._client = clientConnection(NODE_ID,serviceCommands)
         self._model = mockModel()
     
-    def subscribe_helper(self):
+    def _subscribe_helper(self):
         subscribe.callback(self.deliver, "/"+str(NODE_ID), hostname="broker.hivemq.com")
 
     def deliver(self, client, userdata, message):
-        self.assertEquals(message.payload, b'')
+        self.assertEquals(message.payload, b'0')        #mock service commands sends b'0' as model
         self._veryfied = True
 
     #Tests if a served model can be received
     def test_serveEmptyModel(self):
         self._veryfied = False
 
-        #Subscribe to topiv /1
-        _thread.start_new_thread(self.subscribe_helper, ())
+        #Subscribe to topic /1
+        _thread.start_new_thread(self._subscribe_helper, ())
         time.sleep(0.5)                                       #Problem: Nach F.I.R.S.T Prinzip müssen Tests immer schnell sein.
 
-        #call serveModel()
         self._client.serveModel(self._model.files["model.flite"])
         
         time.sleep(0.5)
