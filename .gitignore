@@ -1,2 +1,6 @@
 *.class
 __pycache__/
+
+# vim temporary files
+*.swp
+*.swo

@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-if ! python -c "import mlflow"; then
-   pip install -r requirements.txt
+if ! python3 -c "import mlflow"; then
+   pip3 install -r requirements.txt
 fi
 
 mkdir -p ./mlflow-data
