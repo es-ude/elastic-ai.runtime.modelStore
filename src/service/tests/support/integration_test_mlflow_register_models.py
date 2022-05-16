@@ -1,8 +1,9 @@
 import mlflow
 import mlflow_tflite
+import sys
 
 
-mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_tracking_uri(sys.argv[1])
 
 with open("hello_world.tflite", "rb") as f:
    model = f.read()

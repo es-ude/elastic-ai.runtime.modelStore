@@ -12,7 +12,7 @@ from service.store_connection.mlflow import MLflowStoreConnection, ModelNotFound
 
 
 THIS_DIR = Path(__file__).resolve().parent
-MLFLOW_URI = "http://localhost:5000"
+MLFLOW_URI = "http://localhost:6000"
 
 
 class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
@@ -20,7 +20,7 @@ class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
 	def setUpClass(cls):
 		cls.mlflowServerData = tempfile.TemporaryDirectory()
 		cls.mlflowServer = subprocess.Popen(
-			("mlflow", "server", "--host", "127.0.0.1", "--backend-store-uri",
+			("mlflow", "server", "--host", "127.0.0.1", "--port", "6000", "--backend-store-uri",
 				f"sqlite:///{cls.mlflowServerData.name}/db.sqlite", "--artifacts-destination",
 				f"{cls.mlflowServerData.name}/artifacts", "--serve-artifacts"),
 			stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -28,7 +28,7 @@ class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
 
 		try:
 			subprocess.run(
-				("python3", THIS_DIR / "support/integration_test_mlflow_register_models.py"),
+				("python3", THIS_DIR / "support/integration_test_mlflow_register_models.py", MLFLOW_URI),
 				cwd=THIS_DIR / "support", check=True,
 				stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		except subprocess.CalledProcessError as e:
