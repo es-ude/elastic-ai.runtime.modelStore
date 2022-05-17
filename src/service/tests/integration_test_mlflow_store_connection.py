@@ -1,4 +1,5 @@
 import mlflow
+import os
 import signal
 import subprocess
 import sys
@@ -23,7 +24,7 @@ class IntegrationTest_MLflowStoreConnection(BaseTest_MLflowStoreConnection):
 			("mlflow", "server", "--host", "127.0.0.1", "--port", "6000", "--backend-store-uri",
 				f"sqlite:///{cls.mlflowServerData.name}/db.sqlite", "--artifacts-destination",
 				f"{cls.mlflowServerData.name}/artifacts", "--serve-artifacts"),
-			stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, preexec_fn=os.setsid)
 		cls.addClassCleanup(cls.cleanupServer)
 
 		try:
@@ -47,9 +48,10 @@ class IntegrationTest_MLflowStoreConnection(BaseTest_MLflowStoreConnection):
 
 	@classmethod
 	def cleanupServer(cls):
-		cls.mlflowServer.send_signal(signal.SIGINT)
+		os.killpg(os.getpgid(cls.mlflowServer.pid), signal.SIGINT)
 		cls.mlflowServer.wait(timeout=10)
-		cls.mlflowServer.kill()
+		if cls.mlflowServer.returncode == None:
+			os.killpg(os.getpgid(cls.mlflowServer.pid), signal.SIGKILL)
 
 		cls.mlflowServerData.cleanup()
 
