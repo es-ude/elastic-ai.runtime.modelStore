@@ -7,15 +7,15 @@ import unittest
 
 from mlflow.exceptions import MlflowException
 from pathlib import Path
-from service.entities import Model
-from service.store_connection.mlflow import MLflowStoreConnection, ModelNotFound
+
+from .base_test_mlflow_store_connection import BaseTest_MLflowStoreConnection
 
 
 THIS_DIR = Path(__file__).resolve().parent
 MLFLOW_URI = "http://localhost:6000"
 
 
-class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
+class IntegrationTest_MLflowStoreConnection(BaseTest_MLflowStoreConnection):
 	@classmethod
 	def setUpClass(cls):
 		cls.mlflowServerData = tempfile.TemporaryDirectory()
@@ -41,6 +41,10 @@ class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
 		except MlflowException as e:
 			raise unittest.skipTest(f"{cls.__name__}: can't connect to MLflow tracking server at {MLFLOW_URI}")
 
+		cls.mlflowUri = MLFLOW_URI
+		with open(THIS_DIR / "support/hello_world.tflite", "rb") as f:
+			cls.referenceModelData = f.read()
+
 	@classmethod
 	def cleanupServer(cls):
 		cls.mlflowServer.send_signal(signal.SIGINT)
@@ -49,40 +53,5 @@ class IntegrationTest_MLflowStoreConnection(unittest.TestCase):
 
 		cls.mlflowServerData.cleanup()
 
-	def setUp(self):
-		self.storeConnection = MLflowStoreConnection(MLFLOW_URI)
 
-	def test_getModel(self):
-		model = self.storeConnection.getModel("valid_model")
-		
-		self.assertIsInstance(model, Model)
-		self.assertEqual(model.name, "valid_model")
-		self.assertEqual(model.version, 2)
-		self.assertIn("tflite", model.formats)
-		self.assertIn(model.formats["tflite"], model.files)
-
-		with open(THIS_DIR / "support/hello_world.tflite", "rb") as f:
-			referenceModelData = f.read()
-		
-		self.assertEqual(model.files[model.formats["tflite"]], referenceModelData)
-
-	def test_getModel_invalidModel(self):
-		self.assertRaises(ModelNotFound, self.storeConnection.getModel, "invalid_model")
-
-	def test_getModel_invalidName(self):
-		for v in (None, 1234):
-			with self.subTest(v):
-				self.assertRaises(TypeError, self.storeConnection.getModel, v)
-
-	def test_getNewestVersion(self):
-		version = self.storeConnection.getNewestVersion("valid_model")
-		self.assertIsInstance(version, int)
-		self.assertEqual(version, 2)
-
-	def test_getNewestVersion_invalidModel(self):
-		self.assertRaises(ModelNotFound, self.storeConnection.getNewestVersion, "invalid_model")
-
-	def test_getNewestVersion_invalidName(self):
-		for v in (None, 1234):
-			with self.subTest(v):
-				self.assertRaises(TypeError, self.storeConnection.getNewestVersion, v)
+del BaseTest_MLflowStoreConnection  # don't run base tests

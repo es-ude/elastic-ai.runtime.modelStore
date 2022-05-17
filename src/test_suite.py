@@ -12,6 +12,7 @@ suite.addTests(loader.loadTestsFromModule(service.tests.integration_test_client_
 suite.addTests(loader.loadTestsFromModule(service.tests.test_request_handler))
 suite.addTests(loader.loadTestsFromModule(service.tests.integration_test_request_handler))
 
+suite.addTests(loader.loadTestsFromModule(service.tests.test_mlflow_store_connection))
 suite.addTests(loader.loadTestsFromModule(service.tests.integration_test_mlflow_store_connection))
 
 runner = unittest.TextTestRunner(verbosity=3)
