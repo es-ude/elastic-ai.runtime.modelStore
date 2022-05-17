@@ -1,6 +1,8 @@
+from service.store_connection import ModelNotFound
+
 class mockModel():
-    #files={"model.flite":None}
     files={"model.flite":0}
+    name="hello_world"
     def __init__(self):
         pass
 
@@ -8,4 +10,7 @@ class mock_serviceCommands():
     def __init__(self):
         pass
     def getModel(self, modelName):
-        return mockModel()
+        if modelName == "hello_world":
+            return mockModel()
+        else:
+            raise ModelNotFound

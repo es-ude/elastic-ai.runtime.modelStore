@@ -2,7 +2,6 @@ import mlflow
 import mlflow_tflite
 import sys
 
-
 mlflow.set_tracking_uri(sys.argv[1])
 
 with open("hello_world.tflite", "rb") as f:

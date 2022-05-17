@@ -1,0 +1,4 @@
+artifact_location: file:///home/fabian/Desktop/model-store/src/service/tests/support/mlruns/0
+experiment_id: '0'
+lifecycle_stage: active
+name: Default

@@ -16,7 +16,7 @@ class test_clientConnection(unittest.TestCase):
     def test_getModel(self):                              #Unit Test hier sinnlos? Direkt nur als integration test?
         serviceCommands = mock_serviceCommands()
         client = clientConnection(NODE_ID,serviceCommands)
-        self.assertEqual(0, client.getModel("model 1"))
+        self.assertEqual(0, client.getModel("hello_world"))
 
     # serveModel() mit Unit Test nicht testbar?     
 

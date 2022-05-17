@@ -1,0 +1,8 @@
+artifact_path: model
+flavors:
+  tflite:
+    data: model.tflite
+mlflow_version: 1.25.1
+model_uuid: fa9e7f9133b743eea418053474ec37ef
+run_id: 6dc6cb9063f14141aeb2beb77b9b5fc2
+utc_time_created: '2022-05-16 17:09:32.102539'

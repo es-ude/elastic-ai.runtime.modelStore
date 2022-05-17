@@ -29,7 +29,7 @@ class integrationTest_requestHandler(unittest.TestCase):
         time.sleep(0.5)
 
         #send a message for the request_handler to handle
-        message = NODE_ID + SEPERATOR + "some_model"
+        message = NODE_ID + SEPERATOR + "hello_world"
         publish.single("/service/getModel", payload=message, hostname="broker.hivemq.com")
         time.sleep(0.5) 
         

@@ -1,1 +1,1 @@
-from .mlflow import MLflowStoreConnection
+from .mlflow import MLflowStoreConnection, ModelNotFound
