@@ -24,8 +24,7 @@ class requestHandler:
         modelName = decodedMessage[1]
 
         client = clientConnection(nodeId, self._serviceCommands)
-        model = client.getModel(modelName)                          #todo: Beide Zeile in einen Funktionsaufruf vereinen
-        client.serveModel(model)                                    #
+        client.getAndServeModel(modelName)
         
     def waitForElasticNode(self):
         subscribe.callback(self._on_message_getModel, "/service/getModel", hostname="broker.hivemq.com")
