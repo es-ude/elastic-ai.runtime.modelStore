@@ -1,7 +1,7 @@
 from service.store_connection import ModelNotFound
 
 class mockModel():
-    files={"model.flite":0}
+    files={"model.tflite":0}
     name="hello_world"
     def __init__(self):
         pass

@@ -12,7 +12,7 @@ class clientConnection():
 
     def getModel(self, modelName:str):
         model = self._serviceCommands.getModel(modelName)
-        return model.files['model.flite']
+        return model.files['model.tflite']
 
     def serveModel(self, model:bytearray):
         publish.single(self._topic, payload=model, hostname=HOSTNAME)
