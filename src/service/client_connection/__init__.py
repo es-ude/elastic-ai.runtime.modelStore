@@ -1,1 +1,1 @@
-from .client_connection import clientConnection
+from .client_connection import ClientConnection

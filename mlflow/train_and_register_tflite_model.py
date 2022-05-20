@@ -1,10 +1,12 @@
 # based on https://colab.research.google.com/github/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/hello_world/train/train_hello_world_model.ipynb
 
 import math
+
 import mlflow
-import mlflow_tflite
 import numpy as np
 import tensorflow as tf
+
+import mlflow_tflite
 
 
 # start mlflow run
@@ -29,6 +31,7 @@ y_values += 0.1 * np.random.randn(*y_values.shape)
 TRAIN_SPLIT = int(0.6 * SAMPLES)  # 60%
 TEST_SPLIT = int(0.2 * SAMPLES + TRAIN_SPLIT)  # 20%
 
+# pylint: disable=unbalanced-tuple-unpacking
 x_train, x_test, x_validate = np.split(x_values, [TRAIN_SPLIT, TEST_SPLIT])
 y_train, y_test, y_validate = np.split(y_values, [TRAIN_SPLIT, TEST_SPLIT])
 
@@ -53,9 +56,11 @@ model.save(MODEL_TF)
 
 # convert SavedModel to .tflite format (with quantization)
 
+
 def representative_dataset():
-   for i in range(500):
-      yield([x_train[i].reshape(1, 1)])
+    for i in range(500):
+        yield [x_train[i].reshape(1, 1)]
+
 
 converter = tf.lite.TFLiteConverter.from_saved_model(MODEL_TF)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -65,8 +70,8 @@ converter.inference_output_type = tf.int8
 converter.representative_dataset = representative_dataset
 model_tflite = converter.convert()
 
-with open(MODEL_TFLITE, "wb") as f:
-   f.write(model_tflite)
+with open(MODEL_TFLITE, "wb") as file:
+    file.write(model_tflite)
 
 
 # log and register model

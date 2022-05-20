@@ -1,1 +1,1 @@
-from .request_handler import requestHandler, illegalInput
+from .request_handler import RequestHandler, IllegalInput
