@@ -1,0 +1,7 @@
+default:
+  image: python:latest
+
+run tests:
+  script:
+    - pip install -r test-requirements.txt
+    - python src/test_suite.py
