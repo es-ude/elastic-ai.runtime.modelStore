@@ -44,7 +44,7 @@ class IntegrationTestClientConnection(unittest.TestCase):
         _thread.start_new_thread(self._subscribe_helper, ())
         time.sleep(0.5)  # Problem: Nach F.I.R.S.T Prinzip müssen Tests immer schnell sein.
 
-        self._client.serve_model(self._model.files["model.tflite"])
+        self._client.serve_model(self._model.formats["tflite"])
 
         time.sleep(0.5)
         self.assertTrue(self._verified)

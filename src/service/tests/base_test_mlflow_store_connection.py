@@ -18,9 +18,8 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
         self.assertEqual(model.name, "valid_model")
         self.assertEqual(model.version, 2)
         self.assertIn("tflite", model.formats)
-        self.assertIn(model.formats["tflite"], model.files)
 
-        self.assertEqual(model.files[model.formats["tflite"]], self.reference_model_data)
+        self.assertEqual(model.formats["tflite"], self.reference_model_data)
 
     def test_get_model_invalid_model(self):
         self.assertRaises(ModelNotFound, self.store_connection.get_model, "invalid_model")

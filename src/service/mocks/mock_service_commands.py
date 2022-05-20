@@ -2,7 +2,7 @@ from service.store_connection import ModelNotFound
 
 
 class MockModel:
-    files = {"model.tflite": 0}
+    formats = {"tflite": 0}
     name = "hello_world"
 
     def __init__(self):

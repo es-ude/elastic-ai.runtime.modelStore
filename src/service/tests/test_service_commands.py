@@ -17,7 +17,7 @@ class TestServiceCommands(unittest.TestCase):
         model1 = MockModel()
         model2 = self._service_commands.get_model(model1.name)
         self.assertEqual(model1.name, model2.name)
-        self.assertEqual(model1.files, model2.files)
+        self.assertEqual(model1.formats, model2.formats)
 
     def test_get_model_not_string(self):
         self.assertRaises(TypeError, self._service_commands.get_model, 2)

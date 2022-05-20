@@ -19,35 +19,39 @@ class ModelNotFound(MLflowStoreError):
 
 
 class MLflowStoreConnection:
-    def _mlflow_flavors_to_formats(self, flavors):
-        formats = {}
+    def _mlflow_flavors_to_format_paths(self, flavors):
+        format_paths = {}
 
         if "tensorflow" in flavors:
-            formats["tensorflow"] = flavors["tensorflow"]["saved_model_dir"]
+            format_paths["tensorflow"] = flavors["tensorflow"]["saved_model_dir"]
 
         if "keras" in flavors:
             if flavors["keras"]["save_format"] == "tf" and "tensorflow" not in flavors:
-                formats["tensorflow"] = flavors["keras"]["data"] + "/model"
+                format_paths["tensorflow"] = flavors["keras"]["data"] + "/model"
 
         if "tflite" in flavors:
-            formats["tflite"] = flavors["tflite"]["data"]
+            format_paths["tflite"] = flavors["tflite"]["data"]
 
-        return formats
+        return format_paths
 
-    def _load_formats_from_mlflow_model(self, model_path):
-        model = mlflow.models.Model.load(model_path)
-        flavors = model.get_model_info().flavors
-        return self._mlflow_flavors_to_formats(flavors)
-
-    def _load_model_files(self, path):
-        if not isinstance(path, Path):
-            path = Path(path)
-
+    def _load_model_files(self, path: Path):
         if path.is_file():
             with open(path, "rb") as file:
                 return file.read()
         else:
             return {child.name: self._load_model_files(child) for child in path.iterdir()}
+
+    def _load_formats_from_mlflow_model(self, model_path: Path):
+        model = mlflow.models.Model.load(str(model_path))
+        flavors = model.get_model_info().flavors
+
+        format_paths = self._mlflow_flavors_to_format_paths(flavors)
+
+        formats = {
+            format: self._load_model_files(model_path / path)
+            for format, path in format_paths.items()
+        }
+        return formats
 
     def __init__(self, mlflow_uri):
         mlflow.set_tracking_uri(mlflow_uri)
@@ -64,11 +68,9 @@ class MLflowStoreConnection:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_path = mlflow.artifacts.download_artifacts(artifact_uri=uri, dst_path=tmp_dir)
+            model_formats = self._load_formats_from_mlflow_model(Path(model_path))
 
-            model_formats = self._load_formats_from_mlflow_model(model_path)
-            model_files = self._load_model_files(model_path)
-
-        return Model(model_name, version, model_formats, model_files)
+        return Model(model_name, version, model_formats)
 
     def get_newest_version(self, model_name: str) -> int:
         if not isinstance(model_name, str):

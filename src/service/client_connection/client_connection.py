@@ -15,7 +15,7 @@ class ClientConnection:
 
     def get_model(self, model_name: str):
         model = self._service_commands.get_model(model_name)
-        return model.files["model.tflite"]
+        return model.formats["tflite"]
 
     def serve_model(self, model: bytearray):
         publish.single(self._topic, payload=model, hostname=HOSTNAME)
