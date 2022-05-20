@@ -17,18 +17,9 @@ TEST_MLFLOW_URI = "http://localhost:6000"
 
 
 class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
-    @classmethod
-    def _cleanup_server(cls):
-        os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGINT)
-        cls.mlflow_server.wait(timeout=10)
-        if cls.mlflow_server.returncode is None:
-            os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGKILL)
-
-        cls.mlflow_server_data.cleanup()
-
     # pylint: disable=consider-using-with,subprocess-popen-preexec-fn
     @classmethod
-    def setUpClass(cls):
+    def _start_mlflow_server(cls):
         cls.mlflow_server_data = tempfile.TemporaryDirectory()
         cls.mlflow_server = subprocess.Popen(
             (
@@ -52,6 +43,8 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
 
         cls.addClassCleanup(cls._cleanup_server)
 
+    @classmethod
+    def _upload_test_models(cls):
         try:
             subprocess.run(
                 (
@@ -69,6 +62,17 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
             sys.stdout.buffer.write(exc.output)
             raise unittest.SkipTest(f"{cls.__name__}: failed to upload test model")
 
+    @classmethod
+    def _cleanup_server(cls):
+        os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGINT)
+        cls.mlflow_server.wait(timeout=10)
+        if cls.mlflow_server.returncode is None:
+            os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGKILL)
+
+        cls.mlflow_server_data.cleanup()
+
+    @classmethod
+    def _check_server_connection(cls):
         try:
             client = mlflow.tracking.MlflowClient(TEST_MLFLOW_URI)
             client.list_registered_models()
@@ -76,6 +80,12 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
             raise unittest.skipTest(
                 f"{cls.__name__}: can't connect to MLflow tracking server at {TEST_MLFLOW_URI}"
             ) from exc
+
+    @classmethod
+    def setUpClass(cls):
+        cls._start_mlflow_server()
+        cls._upload_test_models()
+        cls._check_server_connection()
 
         cls.mlflow_uri = TEST_MLFLOW_URI
         with open(THIS_DIR / "support/hello_world.tflite", "rb") as reference_model:
