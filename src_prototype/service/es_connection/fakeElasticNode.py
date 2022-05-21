@@ -13,5 +13,5 @@ message = str(nodeId)+seperator+wantedModel
 def deliver(client, userdata, message):
 	print("Received Data: "+str(message.payload))
 
-target=publish.single("/service", payload=message, hostname="broker.hivemq.com")
+target=publish.single("/service/getModel", payload=message, hostname="broker.hivemq.com")
 target=subscribe.callback(deliver, "/"+str(nodeId), hostname="broker.hivemq.com")

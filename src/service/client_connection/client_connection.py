@@ -1,3 +1,4 @@
+from platform import node
 import paho.mqtt.publish as publish
 from service.store_connection import ModelNotFound
 
@@ -26,3 +27,19 @@ class clientConnection():
             self.serveModel(model)
         except ModelNotFound:
             self._sendModelNotFound()  
+
+''''
+class ClientConnection:
+    def __init__(self, node_id, service_commands, hostname):
+        ...
+
+
+def client_connection_factory(hostname):
+    def create_client_connection(node_id, service_commands):
+        return ClientConnection(node_id, service_commands, hostname)
+    return create_client_connection
+
+from functools import partial
+
+HiveMQClientConnection = partial(ClientConnection, hostname="broker.hivemq.com")
+'''
