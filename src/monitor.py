@@ -3,9 +3,8 @@ import service
 if __name__=="__main__": 
 	storeConnection = service.store_connection.MLflowStoreConnection("http://localhost:5000")
 	print("initialized storeConnection")
-	serviceCommands = service.service_commands.serviceCommands(storeConnection)
+	serviceCommands = service.service_commands.ServiceCommands(storeConnection)
 	print("initialized serviceCommands")
-	requestHandler = service.request_handler.requestHandler(serviceCommands)	
+	requestHandler = service.request_handler.RequestHandler(serviceCommands)	
 	print("initialized request handler")
-	requestHandler.waitForElasticNode()
-
+	requestHandler.wait_for_elastic_node()

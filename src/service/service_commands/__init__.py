@@ -1,1 +1,1 @@
-from .service_commands import serviceCommands
+from .service_commands import ServiceCommands

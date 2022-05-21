@@ -1,31 +1,34 @@
-from base64 import decode
-import paho.mqtt.subscribe as subscribe
-import paho.mqtt.publish as publish
-from service.client_connection import clientConnection
+from paho.mqtt import subscribe
 
-class illegalInput(Exception):
-	pass
+from service.client_connection import ClientConnection
 
-class requestHandler:
-    def __init__(self, serviceCommands):
-        self._serviceCommands = serviceCommands
 
-    def _getInputFromMessage(self, message)->tuple[int,str]:
-        messageStr=bytes.decode(message.payload)
-        #messageStr = str(message)
-        decodedMessage = messageStr.split("$") #$=Trennzeichen
-        if 2 != len(decodedMessage):
-            raise illegalInput("Message must contain only NodeId and modelName sperated by '$'")        
-        return (int(decodedMessage[0]), decodedMessage[1])
+class IllegalInput(Exception):
+    pass
 
-    def _on_message_getModel(self, client, userdata, message):     #todo: catch illegalInput Exception and send feedback to Elastic Node? 
-        decodedMessage = self._getInputFromMessage(message)
-        nodeId = decodedMessage[0]
-        modelName = decodedMessage[1]
 
-        client = clientConnection(nodeId, self._serviceCommands)
-        client.getAndServeModel(modelName)
-        
-    def waitForElasticNode(self):
-        subscribe.callback(self._on_message_getModel, "/service/getModel", hostname="broker.hivemq.com")
+class RequestHandler:
+    def __init__(self, service_commands):
+        self._service_commands = service_commands
 
+    def _get_input_from_message(self, message) -> tuple[int, str]:
+        message_str = bytes.decode(message.payload)
+        # messageStr = str(message)
+        decoded_message = message_str.split("$")  # $=Trennzeichen
+        if 2 != len(decoded_message):
+            raise IllegalInput("Message must contain only NodeId and modelName sperated by '$'")
+        return int(decoded_message[0]), decoded_message[1]
+
+    def _on_message_get_model(self, client, _userdata, message):
+        # todo: catch illegalInput Exception and send feedback to Elastic Node?
+        decoded_message = self._get_input_from_message(message)
+        node_id = decoded_message[0]
+        model_name = decoded_message[1]
+
+        client = ClientConnection(node_id, self._service_commands)
+        client.get_and_serve_model(model_name)
+
+    def wait_for_elastic_node(self):
+        subscribe.callback(
+            self._on_message_get_model, "/service/getModel", hostname="broker.hivemq.com"
+        )

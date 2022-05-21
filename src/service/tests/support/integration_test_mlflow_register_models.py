@@ -1,11 +1,14 @@
-import mlflow
-import mlflow_tflite
 import sys
+
+import mlflow
+
+import mlflow_tflite
+
 
 mlflow.set_tracking_uri(sys.argv[1])
 
-with open("hello_world.tflite", "rb") as f:
-   model = f.read()
+with open("hello_world.tflite", "rb") as file:
+    model = file.read()
 
 REG_MODEL_NAME = "valid_model"
 

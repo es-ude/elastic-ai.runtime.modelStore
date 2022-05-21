@@ -1,3 +1,3 @@
-class mockMessage():
-    def __init__(self, msgStr:str):     
-        self.payload = bytes(msgStr, 'utf-8')
+class MockMessage:
+    def __init__(self, msg_str: str):
+        self.payload = bytes(msg_str, "utf-8")

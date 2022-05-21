@@ -1,6 +1,6 @@
 import unittest
-import service
 
+import service
 
 
 loader = unittest.TestLoader()

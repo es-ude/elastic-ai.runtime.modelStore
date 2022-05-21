@@ -1,4 +1,5 @@
 import mlflow
+
 import mlflow_tflite
 
 
@@ -6,12 +7,10 @@ import mlflow_tflite
 
 mlflow.set_tracking_uri("http://localhost:5000")
 
-
 # load existing model
 
 with open("hello_world.tflite", "rb") as f:
-   model = f.read()
-
+    model = f.read()
 
 # log and register model
 

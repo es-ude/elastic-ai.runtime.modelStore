@@ -1,23 +1,26 @@
 import unittest
-from service.mocks import mock_storeConnection, mockModel
-from service.service_commands import serviceCommands
+
+from service.mocks import MockStoreConnection, MockModel
+from service.service_commands import ServiceCommands
 from service.store_connection import ModelNotFound
+
 
 MLFLOW_URI = "http://localhost:6000"
 
-class test_serviceCommands(unittest.TestCase):
+
+class TestServiceCommands(unittest.TestCase):
     def setUp(self):
-        self._store = mock_storeConnection()
-        self._serviceCommands = serviceCommands(self._store)
+        self._store = MockStoreConnection()
+        self._service_commands = ServiceCommands(self._store)
 
-    def test_getModel(self):
-        model1 = mockModel()
-        model2 = self._serviceCommands.getModel(model1.name)
+    def test_get_model(self):
+        model1 = MockModel()
+        model2 = self._service_commands.get_model(model1.name)
         self.assertEqual(model1.name, model2.name)
-        self.assertEqual(model1.files, model2.files)
-        
-    def test_getModel_notString(self):
-        self.assertRaises(TypeError, self._serviceCommands.getModel, 2)
+        self.assertEqual(model1.formats, model2.formats)
 
-    def test_getModel_modelNotFound(self):
-        self.assertRaises(ModelNotFound, self._serviceCommands.getModel, "missing_model")
+    def test_get_model_not_string(self):
+        self.assertRaises(TypeError, self._service_commands.get_model, 2)
+
+    def test_get_model_model_not_found(self):
+        self.assertRaises(ModelNotFound, self._service_commands.get_model, "missing_model")
