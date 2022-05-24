@@ -5,3 +5,5 @@ from .integration_test_request_handler import IntegrationTestRequestHandler
 from .test_mlflow_store_connection import TestMLflowStoreConnection
 from .integration_test_mlflow_store_connection import IntegrationTestMLflowStoreConnection
 from .test_service_commands import TestServiceCommands
+from .system_test_get_model import SystemTestGetModel
+from .helper_model_store_test import SetUpModelStore

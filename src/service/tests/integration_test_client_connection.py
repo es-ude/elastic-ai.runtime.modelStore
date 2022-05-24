@@ -1,6 +1,7 @@
 import _thread
 import time
 import unittest
+import threading
 
 from paho.mqtt import subscribe
 
@@ -33,19 +34,20 @@ class IntegrationTestClientConnection(unittest.TestCase):
         _thread.exit()
 
     def _start_client_with_callback(self, callback):
+        #return threading.Thread(target=self._subscribe_to_public_broker, args=(callback,))
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
 
     #Tests if a served model can be received
     def test_serveEmptyModel(self):
-
-        #Subscribe to topic /1
         self._start_client_with_callback(self._deliver)
+        #clientThread.start()
         time.sleep(0.5)                                      
 
         self._client.serve_model(self._model.formats["tflite"])
 
     def test_client_receives_error_after_requesting_unknown_model(self):
         self._start_client_with_callback(self._deliver_ModelNotFound)
+        #clientThread.start()
         time.sleep(0.5)
 
         self._client.get_and_serve_model("unknown_model")

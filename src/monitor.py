@@ -6,13 +6,13 @@ class Monitor:
 		self._model_store_uri = model_store_uri
 
 	def run(self):
-		storeConnection = service.store_connection.MLflowStoreConnection("http://localhost:5000")
+		store_connection = service.store_connection.MLflowStoreConnection(self._model_store_uri)
 		print("initialized storeConnection")
-		serviceCommands = service.service_commands.ServiceCommands(storeConnection)
+		service_commands = service.service_commands.ServiceCommands(store_connection)
 		print("initialized serviceCommands")
-		requestHandler = service.request_handler.RequestHandler(serviceCommands)
+		request_handler = service.request_handler.RequestHandler(service_commands)
 		print("initialized request handler")
-		requestHandler.wait_for_elastic_node()
+		request_handler.wait_for_elastic_node()
 
 if __name__=="__main__":
 	parser = argparse.ArgumentParser(description="Monitor")
