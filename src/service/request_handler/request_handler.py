@@ -1,5 +1,5 @@
 from paho.mqtt import subscribe
-
+import threading
 from service.client_connection import ClientConnection
 
 
@@ -27,7 +27,8 @@ class RequestHandler:
         model_name = decoded_message[1]
 
         client = ClientConnection(node_id, self._service_commands, self._mqtt_broker)
-        client.get_and_serve_model(model_name)
+        client_thread = threading.Thread(target=client.get_and_serve_model, args=(model_name, ))
+        client_thread.start()
 
     def wait_for_elastic_node(self):
         subscribe.callback(
