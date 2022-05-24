@@ -6,16 +6,16 @@ from service.store_connection import ModelNotFound
 
 
 NODE_ID = 1
-
+PUBLIC_BROKER = "broker.hivemq.com"
 
 class TestClientConnection(unittest.TestCase):
     def setUp(self):
         self._service_commands = MockServiceCommands()
-        self._client = ClientConnection(NODE_ID, self._service_commands)
+        self._client = ClientConnection(NODE_ID, self._service_commands, PUBLIC_BROKER)
 
     # pylint: disable=protected-access
     def test_constructor_call(self):
-        client = ClientConnection(NODE_ID, None)
+        client = ClientConnection(NODE_ID, None, PUBLIC_BROKER)
         self.assertEqual(NODE_ID, client._node_id)
         self.assertEqual(None, client._service_commands)
 

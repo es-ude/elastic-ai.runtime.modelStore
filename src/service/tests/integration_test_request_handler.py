@@ -15,7 +15,7 @@ PUBLIC_BROKER = "broker.hivemq.com"
 
 class IntegrationTestRequestHandler(unittest.TestCase):
     def setUp(self) -> None:
-        self._handler = RequestHandler(MockServiceCommands())
+        self._handler = RequestHandler(MockServiceCommands(), PUBLIC_BROKER)
         self._arrived = False
 
     def _callback(self, _client, _userdata, message):
@@ -27,10 +27,10 @@ class IntegrationTestRequestHandler(unittest.TestCase):
 
     def _call_wait_for_elastic_node(self):
         _thread.start_new_thread(self._handler.wait_for_elastic_node, ())
-        
+
     def _subscribe_to_public_broker(self):
         _thread.start_new_thread(self._subscribe_helper, ())  # Helper thread to subscribe
-        
+
     def _send_mqtt_request_for_model(self):
         message = NODE_ID + SEPERATOR + "hello_world"
         publish.single("/service/getModel", payload=message, hostname=PUBLIC_BROKER)

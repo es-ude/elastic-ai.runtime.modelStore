@@ -8,8 +8,9 @@ class IllegalInput(Exception):
 
 
 class RequestHandler:
-    def __init__(self, service_commands):
+    def __init__(self, service_commands, mqtt_broker):
         self._service_commands = service_commands
+        self._mqtt_broker = mqtt_broker
 
     def _get_input_from_message(self, message) -> tuple[int, str]:
         message_str = bytes.decode(message.payload)
@@ -25,7 +26,7 @@ class RequestHandler:
         node_id = decoded_message[0]
         model_name = decoded_message[1]
 
-        client = ClientConnection(node_id, self._service_commands)
+        client = ClientConnection(node_id, self._service_commands, self._mqtt_broker)
         client.get_and_serve_model(model_name)
 
     def wait_for_elastic_node(self):
