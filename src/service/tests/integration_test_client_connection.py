@@ -17,7 +17,7 @@ HOSTNAME= "broker.hivemq.com"
 class IntegrationTestClientConnection(unittest.TestCase):
     def setUp(self) -> None:
         self._service_commands = MockServiceCommands()
-        self._client = ClientConnection(NODE_ID, self._service_commands, HOSTNAME)
+        self._client = ClientConnection(NODE_ID, self._service_commands)
         self._model = MockModel()
         self._verified = False
 

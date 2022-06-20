@@ -1,6 +1,7 @@
 from paho.mqtt import subscribe
 import threading
 from service.client_connection import ClientConnection
+from service.connection import Connection
 
 
 class IllegalInput(Exception):
@@ -8,9 +9,8 @@ class IllegalInput(Exception):
 
 
 class RequestHandler:
-    def __init__(self, service_commands, mqtt_broker):
+    def __init__(self, service_commands):
         self._service_commands = service_commands
-        self._mqtt_broker = mqtt_broker
 
     def _get_input_from_message(self, message) -> tuple[int, str]:
         message_str = bytes.decode(message.payload)
@@ -26,11 +26,9 @@ class RequestHandler:
         node_id = decoded_message[0]
         model_name = decoded_message[1]
 
-        client = ClientConnection(node_id, self._service_commands, self._mqtt_broker)
+        client = ClientConnection(node_id, self._service_commands)
         client_thread = threading.Thread(target=client.get_and_serve_model, args=(model_name, ))
         client_thread.start()
 
     def wait_for_elastic_node(self):
-        subscribe.callback(
-            self._on_message_get_model, "/service/getModel", hostname="broker.hivemq.com"
-        )
+        Connection().receive(self._on_message_get_model, "getModel")
