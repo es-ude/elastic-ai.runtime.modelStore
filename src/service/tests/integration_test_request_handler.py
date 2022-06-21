@@ -32,7 +32,7 @@ class IntegrationTestRequestHandler(unittest.TestCase):
         _thread.start_new_thread(self._subscribe_helper, ())  # Helper thread to subscribe
 
     def _send_mqtt_request_for_model(self):
-        message = NODE_ID + SEPERATOR + "hello_world"
+        message = NODE_ID + SEPERATOR + "model:6d6f636b" # 'mock'
         publish.single("/service/getModel", payload=message, hostname=PUBLIC_BROKER)
         time.sleep(1)
 

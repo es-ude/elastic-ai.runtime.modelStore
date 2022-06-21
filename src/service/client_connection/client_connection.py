@@ -12,20 +12,20 @@ class ClientConnection:
         self._service_commands = service_commands
         self._connection = Connection()
 
-    def get_model(self, model_name: str):
-        model = self._service_commands.get_model(model_name)
-        return model.formats["tflite"]
+    def get_model(self, model_uri: str):
+        model = self._service_commands.get_model(model_uri)
+        return model.data
 
-    def serve_model(self, model: bytearray):
-        self._connection.send(self._node_id, model)
+    def serve_model(self, model_data_url: str):
+        self._connection.send(self._node_id, model_data_url)
 
     def _send_model_not_found(self):
         self._connection.send(self._node_id, MODEL_NOT_FOUND_ERROR)
 
-    def get_and_serve_model(self, model_name: str):
+    def get_and_serve_model(self, model_uri: str):
         try:
-            model = self.get_model(model_name)
-            self.serve_model(model)
+            model_data_url = self.get_model(model_uri)
+            self.serve_model(model_data_url)
         except ModelNotFound:
             self._send_model_not_found()
 

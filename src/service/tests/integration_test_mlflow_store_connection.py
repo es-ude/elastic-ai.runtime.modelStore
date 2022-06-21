@@ -1,3 +1,4 @@
+import hashlib
 import os
 import signal
 import subprocess
@@ -90,6 +91,7 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
         cls.mlflow_uri = TEST_MLFLOW_URI
         with open(THIS_DIR / "support/hello_world.tflite", "rb") as reference_model:
             cls.reference_model_data = reference_model.read()
+            cls.reference_model_hash = hashlib.sha256(cls.reference_model_data).digest()
 
 
 del BaseTestMLflowStoreConnection  # don't run base tests

@@ -44,7 +44,7 @@ class IntegrationTestClientConnection(unittest.TestCase):
         #clientThread.start()
         time.sleep(0.5)
 
-        self._client.serve_model(self._model.formats["tflite"])
+        self._client.serve_model(self._model.data)
 
     def test_client_receives_error_after_requesting_unknown_model(self):
         self._start_client_with_callback(self._deliver_model_not_found)

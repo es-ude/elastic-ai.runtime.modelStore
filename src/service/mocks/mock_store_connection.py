@@ -3,11 +3,11 @@ from service.store_connection import ModelNotFound
 
 
 class MockStoreConnection:
-    def get_model(self, model_name: str):
-        if not isinstance(model_name, str):
-            raise TypeError("modelName")
+    def get_model(self, model_hash: bytes):
+        if not isinstance(model_hash, bytes):
+            raise TypeError("model_hash")
 
-        if model_name == "hello_world":
+        if model_hash == b"mock":
             return MockModel()
         else:
             raise ModelNotFound

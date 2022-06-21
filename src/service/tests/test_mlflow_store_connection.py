@@ -1,3 +1,4 @@
+import hashlib
 import sys
 from pathlib import Path
 from unittest import mock
@@ -12,6 +13,10 @@ from .base_test_mlflow_store_connection import BaseTestMLflowStoreConnection
 class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
     @classmethod
     def setUpClass(cls):
+        cls.mlflow_uri = "mock-server"
+        cls.reference_model_data = b"mock model data"
+        cls.reference_model_hash = hashlib.sha256(cls.reference_model_data).digest()
+
         mock_mlflow = mock.create_autospec(mlflow)
         cls.addClassCleanup(cls._cleanup_mock)
 
@@ -26,6 +31,15 @@ class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
                 raise MlflowException("")
 
         mock_mlflow.tracking.MlflowClient().get_latest_versions.side_effect = get_latest_versions
+
+        def search_model_versions(*_args, **_kwargs):
+            mock_model_version = mock_mlflow.entities.model_registry.ModelVersion("valid_model", 2, 0)
+            mock_model_version.name = "valid_model"
+            mock_model_version.version = 1
+            mock_model_version.tags = {"hash": cls.reference_model_hash.hex()}
+            return [mock_model_version]
+
+        mock_mlflow.tracking.MlflowClient().search_model_versions.side_effect = search_model_versions
 
         def download_artifacts(dst_path, *_args, **_kwargs):
             path = Path(dst_path)
@@ -52,9 +66,6 @@ class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
 
         sys.modules["mlflow"] = mock_mlflow
         service.store_connection.mlflow.mlflow = mock_mlflow
-
-        cls.mlflow_uri = "mock-server"
-        cls.reference_model_data = b"mock model data"
 
     @classmethod
     def _cleanup_mock(cls):

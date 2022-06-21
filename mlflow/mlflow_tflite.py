@@ -1,3 +1,4 @@
+import hashlib
 import os
 import sys
 
@@ -32,10 +33,21 @@ def get_default_conda_env():
     return mlflow.tensorflow.get_default_conda_env()
 
 
-def log_model(tflite_model, artifact_path, registered_model_name=None, **kwargs):
+def log_model(tflite_model, artifact_path, registered_model_name=None, await_registration_for=300, **kwargs):
     Model.log(
-        artifact_path, mlflow_tflite, registered_model_name, tflite_model=tflite_model, **kwargs
+        artifact_path, mlflow_tflite, tflite_model=tflite_model, **kwargs
     )
+    if registered_model_name is not None:
+        run_id = mlflow.tracking.fluent.active_run().info.run_id
+        version = mlflow.register_model(
+            "runs:/%s/%s" % (run_id, artifact_path),
+            registered_model_name,
+            await_registration_for=await_registration_for,
+        )
+
+        model_hash = hashlib.sha256(tflite_model).digest()
+        client = mlflow.tracking.MlflowClient()
+        client.set_model_version_tag(version.name, version.version, "hash", model_hash.hex())
 
 
 def save_model(

@@ -1,5 +1,7 @@
+import hashlib
 import tempfile
 from pathlib import Path
+from urllib.parse import urlparse
 
 import mlflow
 from mlflow.exceptions import MlflowException
@@ -19,20 +21,18 @@ class ModelNotFound(MLflowStoreError):
 
 
 class MLflowStoreConnection:
-    def _mlflow_flavors_to_format_paths(self, flavors):
-        format_paths = {}
-
+    def _get_model_data_path_and_format(self, flavors):
         if "tensorflow" in flavors:
-            format_paths["tensorflow"] = flavors["tensorflow"]["saved_model_dir"]
+            return flavors["tensorflow"]["saved_model_dir"], "tensorflow"
 
         if "keras" in flavors:
             if flavors["keras"]["save_format"] == "tf" and "tensorflow" not in flavors:
-                format_paths["tensorflow"] = flavors["keras"]["data"] + "/model"
+                return flavors["keras"]["data"] + "/model", "tensorflow"
 
         if "tflite" in flavors:
-            format_paths["tflite"] = flavors["tflite"]["data"]
+            return flavors["tflite"]["data"], "tflite"
 
-        return format_paths
+        return None
 
     def _load_model_files(self, path: Path):
         if path.is_file():
@@ -41,49 +41,39 @@ class MLflowStoreConnection:
         else:
             return {child.name: self._load_model_files(child) for child in path.iterdir()}
 
-    def _load_formats_from_mlflow_model(self, model_path: Path):
+    def _load_data_from_mlflow_model(self, model_path: Path):
         model = mlflow.models.Model.load(str(model_path))
         flavors = model.get_model_info().flavors
+        path_and_format = self._get_model_data_path_and_format(flavors)
+        if path_and_format is None:
+            raise ModelNotFound("Model has no supported format")
 
-        format_paths = self._mlflow_flavors_to_format_paths(flavors)
-
-        formats = {
-            format: self._load_model_files(model_path / path)
-            for format, path in format_paths.items()
-        }
-        return formats
+        path, model_format = path_and_format
+        return self._load_model_files(model_path / path), model_format
 
     def __init__(self, mlflow_uri):
         mlflow.set_tracking_uri(mlflow_uri)
         self.client = mlflow.tracking.MlflowClient()
 
-    def get_model(self, model_name: str) -> Model:
-        if not isinstance(model_name, str):
-            raise TypeError("modelName")
+    def get_model(self, model_hash: bytes) -> Model:
+        if not isinstance(model_hash, bytes):
+            raise TypeError("model_hash")
+        if len(model_hash) != hashlib.sha256().digest_size:
+            raise ValueError("model_hash")
 
-        # will raise ModelNotFound
-        version = self.get_newest_version(model_name)
+        all_versions = self.client.search_model_versions("")
+        matching_versions = [v for v in all_versions if bytes.fromhex(v.tags.get("hash", "")) == model_hash]
 
-        uri = self.client.get_model_version_download_uri(model_name, version)
+        if len(matching_versions) == 0:
+            raise ModelNotFound
+        if len(matching_versions) > 1:
+            print(f"The store contains more than one model with the hash '{model_hash.hex()}', using the first model found")
+
+        version = matching_versions[0]
+        uri = self.client.get_model_version_download_uri(version.name, version.version)
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             model_path = mlflow.artifacts.download_artifacts(artifact_uri=uri, dst_path=tmp_dir)
-            model_formats = self._load_formats_from_mlflow_model(Path(model_path))
+            data, model_format = self._load_data_from_mlflow_model(Path(model_path))
 
-        return Model(model_name, version, model_formats)
-
-    def get_newest_version(self, model_name: str) -> int:
-        if not isinstance(model_name, str):
-            raise TypeError("modelName")
-
-        try:
-            model_versions = self.client.get_latest_versions(model_name, [MODEL_STAGE])
-        except MlflowException as exc:
-            raise ModelNotFound from exc
-
-        try:
-            model_version = model_versions[0]
-        except IndexError as exc:
-            raise MLflowStoreError from exc
-
-        return int(model_version.version)
+        return Model(version.name, int(version.version), model_format, data)
