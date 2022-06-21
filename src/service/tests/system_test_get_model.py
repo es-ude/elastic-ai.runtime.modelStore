@@ -7,6 +7,7 @@ import time
 from .helper_model_store_test import SetUpModelStore
 from pathlib import Path
 import _thread
+import requests
 
 NODE_ID = 1
 PUBLIC_HOSTNAME = "broker.hivemq.com"
@@ -28,20 +29,23 @@ class SystemTestGetModel(unittest.TestCase):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
 
     def _get_correct_model(self):
-        with open("service/tests/support/hello_world.tflite", "rb") as file:
+        with open(THIS_DIR / "support/hello_world.tflite", "rb") as file:
             model = file.read()
         return model
 
     def _deliver(self, client, userdata, message):
+        model_url = message.payload
+        res = requests.get(model_url)
+        res.raise_for_status()
         correct_model = self._get_correct_model()
-        received_model = message.payload
+        received_model = res.content
 
         self.assertEqual(correct_model, received_model)
         self._received_model = True
         _thread.exit()
 
     def _request_model_from_service(self):
-        model_name = "valid_model"
+        model_name = "model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10"
         seperator = "$"
         message = str(NODE_ID)+seperator+model_name
         publish.single("/service/getModel", message, hostname=PUBLIC_HOSTNAME)

@@ -6,4 +6,4 @@ class Model:
     name: str
     version: int
     format: str
-    data: bytes
+    data_url: str

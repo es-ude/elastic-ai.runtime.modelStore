@@ -19,7 +19,7 @@ class TestServiceCommands(unittest.TestCase):
         self.assertEqual(model1.name, model2.name)
         self.assertEqual(model1.version, model2.version)
         self.assertEqual(model1.format, model2.format)
-        self.assertEqual(model1.data, model2.data)
+        self.assertEqual(model1.data_url, model2.data_url)
 
     def test_get_model_not_string(self):
         self.assertRaises(TypeError, self._service_commands.get_model, 2)

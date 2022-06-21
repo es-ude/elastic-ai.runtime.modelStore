@@ -14,7 +14,7 @@ class ClientConnection:
 
     def get_model(self, model_uri: str):
         model = self._service_commands.get_model(model_uri)
-        return model.data
+        return model.data_url
 
     def serve_model(self, model_data_url: str):
         self._connection.send(self._node_id, model_data_url)

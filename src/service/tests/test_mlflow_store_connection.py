@@ -4,6 +4,8 @@ from pathlib import Path
 from unittest import mock
 
 import mlflow
+import requests
+import yaml
 from mlflow.exceptions import MlflowException
 
 import service
@@ -13,24 +15,13 @@ from .base_test_mlflow_store_connection import BaseTestMLflowStoreConnection
 class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
     @classmethod
     def setUpClass(cls):
-        cls.mlflow_uri = "mock-server"
+        cls.mlflow_uri = "http://mock-server"
         cls.reference_model_data = b"mock model data"
+        cls.reference_model_data_url = "http://example.com/model/model.tflite"
         cls.reference_model_hash = hashlib.sha256(cls.reference_model_data).digest()
 
         mock_mlflow = mock.create_autospec(mlflow)
         cls.addClassCleanup(cls._cleanup_mock)
-
-        def get_latest_versions(model, *_args, **_kwargs):
-            if model == "valid_model":
-                mock_model_version = mock_mlflow.entities.model_registry.ModelVersion(
-                    "valid_model", 2, 0
-                )
-                mock_model_version.version = 2
-                return [mock_model_version]
-            else:
-                raise MlflowException("")
-
-        mock_mlflow.tracking.MlflowClient().get_latest_versions.side_effect = get_latest_versions
 
         def search_model_versions(*_args, **_kwargs):
             mock_model_version = mock_mlflow.entities.model_registry.ModelVersion("valid_model", 2, 0)
@@ -59,18 +50,25 @@ class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
 
         mock_mlflow.artifacts.download_artifacts.side_effect = download_artifacts
 
+        def get_model_version_download_uri(*_args, **_kwargs):
+            return "http://example.com/model"
+
+        mock_mlflow.tracking.MlflowClient().get_model_version_download_uri.side_effect = get_model_version_download_uri
+
         model_info = mock.MagicMock()
         model_info.flavors = {"tflite": {"data": "model.tflite"}}
 
-        mock_mlflow.models.Model.load("").get_model_info.return_value = model_info
+        mock_mlflow.models.Model.from_dict({}).get_model_info.return_value = model_info
 
-        sys.modules["mlflow"] = mock_mlflow
         service.store_connection.mlflow.mlflow = mock_mlflow
+        service.store_connection.mlflow.requests = mock.MagicMock()
+        service.store_connection.mlflow.yaml = mock.MagicMock()
 
     @classmethod
     def _cleanup_mock(cls):
-        sys.modules["mlflow"] = mlflow
         service.store_connection.mlflow.mlflow = mlflow
+        service.store_connection.mlflow.requests = requests
+        service.store_connection.mlflow.yaml = yaml
 
 
 del BaseTestMLflowStoreConnection  # don't run base tests

@@ -7,6 +7,7 @@ from service.store_connection.mlflow import MLflowStoreConnection, ModelNotFound
 class BaseTestMLflowStoreConnection(unittest.TestCase):
     mlflow_uri = None
     reference_model_data = None
+    reference_model_data_url = None
     reference_model_hash = None
 
     def setUp(self):
@@ -19,7 +20,7 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
         self.assertEqual(model.name, "valid_model")
         self.assertEqual(model.version, 1)
         self.assertEqual(model.format, "tflite")
-        self.assertEqual(model.data, self.reference_model_data)
+        self.assertEqual(model.data_url, self.reference_model_data_url)
 
     def test_get_nonexistent_model(self):
         self.assertRaises(ModelNotFound, self.store_connection.get_model, b"invalid hash".ljust(32, b"-"))

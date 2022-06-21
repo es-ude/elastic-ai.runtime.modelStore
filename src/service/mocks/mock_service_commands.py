@@ -5,7 +5,7 @@ class MockModel:
     name = "hello_world"
     version = 1
     format = "tflite"
-    data = 0
+    data_url = "http://example.com/model/model.tflite"
 
     def __init__(self):
         pass

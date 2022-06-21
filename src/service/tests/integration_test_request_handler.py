@@ -20,7 +20,7 @@ class IntegrationTestRequestHandler(unittest.TestCase):
 
     def _callback(self, _client, _userdata, message):
         self._arrived = True
-        self.assertEqual(message.payload, b"0")  # mock serviceCommands sends b'0' as model
+        self.assertEqual(message.payload, b"http://example.com/model/model.tflite")
 
     def _subscribe_helper(self):
         subscribe.callback(self._callback, "/" + NODE_ID, hostname=PUBLIC_BROKER)

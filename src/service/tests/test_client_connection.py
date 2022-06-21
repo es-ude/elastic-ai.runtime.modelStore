@@ -20,7 +20,7 @@ class TestClientConnection(unittest.TestCase):
         self.assertEqual(None, client._service_commands)
 
     def test_get_model(self):
-        self.assertEqual(0, self._client.get_model("model:6d6f636b")) # 'mock'
+        self.assertEqual("http://example.com/model/model.tflite", self._client.get_model("model:6d6f636b")) # 'mock'
 
     def test_get_model_model_not_found(self):
         self.assertRaises(ModelNotFound, self._client.get_model, "model:696e76616c6964") # 'invalid'

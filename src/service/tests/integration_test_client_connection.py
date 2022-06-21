@@ -25,7 +25,7 @@ class IntegrationTestClientConnection(unittest.TestCase):
         subscribe.callback(callback, "/"+str(NODE_ID), hostname=HOSTNAME)
 
     def _deliver(self, client, userdata, message):
-        self.assertEquals(message.payload, b'0')        #mock service commands sends b'0' as model
+        self.assertEquals(message.payload, b"http://example.com/model/model.tflite")
         self._veryfied = True
         _thread.exit()
 
@@ -44,7 +44,7 @@ class IntegrationTestClientConnection(unittest.TestCase):
         #clientThread.start()
         time.sleep(0.5)
 
-        self._client.serve_model(self._model.data)
+        self._client.serve_model(self._model.data_url)
 
     def test_client_receives_error_after_requesting_unknown_model(self):
         self._start_client_with_callback(self._deliver_model_not_found)

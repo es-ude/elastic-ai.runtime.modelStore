@@ -4,7 +4,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import mlflow
+import requests
+import yaml
 from mlflow.exceptions import MlflowException
+from mlflow.store.artifact.mlflow_artifacts_repo import MlflowArtifactsRepository
 
 from service.entities import Model
 
@@ -34,22 +37,19 @@ class MLflowStoreConnection:
 
         return None
 
-    def _load_model_files(self, path: Path):
-        if path.is_file():
-            with open(path, "rb") as file:
-                return file.read()
-        else:
-            return {child.name: self._load_model_files(child) for child in path.iterdir()}
+    def _get_format_and_data_url(self, artifact_url: str):
+        res = requests.get(f"{artifact_url}/MLmodel")
+        res.raise_for_status()
+        model_info = yaml.safe_load(res.content)
 
-    def _load_data_from_mlflow_model(self, model_path: Path):
-        model = mlflow.models.Model.load(str(model_path))
+        model = mlflow.models.Model.from_dict(model_info)
         flavors = model.get_model_info().flavors
         path_and_format = self._get_model_data_path_and_format(flavors)
         if path_and_format is None:
             raise ModelNotFound("Model has no supported format")
 
         path, model_format = path_and_format
-        return self._load_model_files(model_path / path), model_format
+        return f"{artifact_url}/{path}", model_format
 
     def __init__(self, mlflow_uri):
         mlflow.set_tracking_uri(mlflow_uri)
@@ -71,9 +71,8 @@ class MLflowStoreConnection:
 
         version = matching_versions[0]
         uri = self.client.get_model_version_download_uri(version.name, version.version)
+        if uri.startswith("mlflow-artifacts"):
+            uri = MlflowArtifactsRepository.resolve_uri(uri, mlflow.get_tracking_uri())
 
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            model_path = mlflow.artifacts.download_artifacts(artifact_uri=uri, dst_path=tmp_dir)
-            data, model_format = self._load_data_from_mlflow_model(Path(model_path))
-
-        return Model(version.name, int(version.version), model_format, data)
+        data_url, model_format = self._get_format_and_data_url(uri)
+        return Model(version.name, int(version.version), model_format, data_url)
