@@ -5,4 +5,5 @@ from dataclasses import dataclass
 class Model:
     name: str
     version: int
-    formats: dict
+    format: str
+    data_url: str

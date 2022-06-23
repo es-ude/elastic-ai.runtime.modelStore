@@ -1,2 +1,4 @@
 mlflow
 paho-mqtt
+pyyaml
+requests
