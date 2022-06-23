@@ -7,3 +7,4 @@ from .integration_test_mlflow_store_connection import IntegrationTestMLflowStore
 from .test_service_commands import TestServiceCommands
 from .system_test_get_model import SystemTestGetModel
 from .helper_model_store_test import SetUpModelStore
+from .integration_test_model_finder import TestModelFinder

@@ -1,0 +1,33 @@
+[
+    {
+      "@id": "http://platzhalter.de/hello_world_model_3",
+      "@type": [
+        "http://platzhalter.de/service_namespaceModel"
+      ],
+      "http://platzhalter.de/service_namespaceAccuracy": [
+        {
+          "@value": 0.9
+        }
+      ],
+      "http://platzhalter.de/service_namespaceInput": [
+        {
+          "@id": "http://platzhalter.de/service_namespaceFloat"
+        }
+      ],
+      "http://platzhalter.de/service_namespaceModelName": [
+        {
+          "@value": "hello_world_3"
+        }
+      ],
+      "http://platzhalter.de/service_namespaceOutput": [
+        {
+          "@id": "http://platzhalter.de/service_namespaceFloat"
+        }
+      ],
+      "http://platzhalter.de/service_namespacePredict": [
+        {
+          "@id": "http://platzhalter.de/service_namespaceSine"
+        }
+      ]
+    }
+  ]
