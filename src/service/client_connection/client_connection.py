@@ -16,7 +16,7 @@ class ClientConnection:
         model = self._service_commands.get_model(model_uri)
         return model.data_url
 
-    def serve_model(self, model_data_url: str):
+    def serve(self, model_data_url: str):
         self._connection.send(self._node_id, model_data_url)
 
     def _send_model_not_found(self):
@@ -25,9 +25,16 @@ class ClientConnection:
     def get_and_serve_model(self, model_uri: str):
         try:
             model_data_url = self.get_model(model_uri)
-            self.serve_model(model_data_url)
+            self.serve(model_data_url)
         except ModelNotFound:
             self._send_model_not_found()
+
+    def search_for_model(self, problem_graph):
+        try:
+            model_uri = self._service_commands.search_model(problem_graph)
+            self.serve(model_uri)
+        except ModelNotFound:
+            self._send_model_not_found()    #is it better to use a different exception?
 
 ''''
 class ClientConnection:

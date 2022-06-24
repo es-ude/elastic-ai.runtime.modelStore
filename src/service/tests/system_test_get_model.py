@@ -55,7 +55,7 @@ class SystemTestGetModel(unittest.TestCase):
         self._model_store.set_up()
         self.addClassCleanup(self._model_store.cleanup_server)
 
-    def test_start_monitor_and_send_request(self):
+    def test_start_monitor_and_send_model_request(self):
         self._set_up_model_store()
         self._start_service()
         self._start_client_with_callback(self._deliver)

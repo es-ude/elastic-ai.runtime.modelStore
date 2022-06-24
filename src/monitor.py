@@ -8,7 +8,8 @@ class Monitor:
 	def run(self):
 		store_connection = service.store_connection.MLflowStoreConnection(self._model_store_uri)
 		print("initialized storeConnection")
-		service_commands = service.service_commands.ServiceCommands(store_connection)
+		model_finder = service.model_finder.ModelFinder()
+		service_commands = service.service_commands.ServiceCommands(store_connection, model_finder)
 		print("initialized serviceCommands")
 		request_handler = service.request_handler.RequestHandler(service_commands)
 		print("initialized request handler")

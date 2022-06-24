@@ -1,1 +1,1 @@
-from .model_finder import ModelFinder
+from .model_finder import ModelFinder, IllegalGraphException

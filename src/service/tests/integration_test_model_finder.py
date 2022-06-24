@@ -1,5 +1,5 @@
 import unittest
-from service.model_finder import ModelFinder
+from service.model_finder import ModelFinder, IllegalGraphException
 from rdflib import Graph, URIRef, Literal, RDF
 from service.service_namespace import ServiceNamespace
 from rdflib.namespace import XSD
@@ -19,6 +19,7 @@ class TestModelFinder(unittest.TestCase):
 
     def test_simple_query(self):
         correct_query = """
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Predict service_namespace:Sine .
@@ -32,6 +33,7 @@ class TestModelFinder(unittest.TestCase):
 
     def test_query_with_size(self):
         correct_query = """
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Size ?Size .
@@ -46,6 +48,7 @@ class TestModelFinder(unittest.TestCase):
 
     def test_query_with_accuracy(self):
         correct_query = """
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Accuracy ?Accuracy .
@@ -75,7 +78,7 @@ class TestModelFinder(unittest.TestCase):
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         self._model_finder._set_graph(self._graph)
-        returned_model_uri = self._model_finder.search_store(serialized_graph)
+        returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
 
@@ -96,12 +99,12 @@ class TestModelFinder(unittest.TestCase):
         problem_graph.add((problem_description, ServiceNamespace.Predict, ServiceNamespace.Sine))
         problem_graph.add((problem_description, ServiceNamespace.Input, ServiceNamespace.Float))
         problem_graph.add((problem_description, ServiceNamespace.Output, ServiceNamespace.Float))
-        self._graph.add((problem_description, ServiceNamespace.Size, Literal(1100, datatype=XSD.integer)))
-        self._graph.add((problem_description, ServiceNamespace.Accuracy, Literal(0.8, datatype=XSD.double)))
+        problem_graph.add((problem_description, ServiceNamespace.Size, Literal(1100, datatype=XSD.integer)))
+        problem_graph.add((problem_description, ServiceNamespace.Accuracy, Literal(0.8, datatype=XSD.double)))
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         self._model_finder._set_graph(self._graph)
-        returned_model_uri = self._model_finder.search_store(serialized_graph)
+        returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
 
@@ -124,7 +127,7 @@ class TestModelFinder(unittest.TestCase):
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         self._model_finder._set_graph(self._graph)
-        returned_model_uri = self._model_finder.search_store(serialized_graph)
+        returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
 
@@ -149,9 +152,34 @@ class TestModelFinder(unittest.TestCase):
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         self._model_finder._set_graph(self._graph)
-        returned_model_uri = self._model_finder.search_store(serialized_graph)
+        returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
 
-    def test_find_model_with_illegal_graph(self):
+    #Assumption: All graphs are correct.
+    '''
+    def test_find_model_with_illegal_store_graph(self):
+        #Graph of the known models:
+        self._graph.add((self._test_model, RDF.type, ServiceNamespace.Model))
+        self._graph.add((self._test_model, ServiceNamespace.Predict, ServiceNamespace.Sine))
+        self._graph.add((self._test_model, ServiceNamespace.Input, ServiceNamespace.Float))
+        self._graph.add((self._test_model, ServiceNamespace.Output, ServiceNamespace.Float))
+        self._graph.add((ServiceNamespace.Output, ServiceNamespace.Priority, ServiceNamespace.Optional)) #priority does not make sense for the store graph
+
+        #Graph for the requested model:
+        problem_graph = Graph()
+        problem_graph.bind("service_namespace", ServiceNamespace)
+        problem_description = URIRef("http://platzhalter.de/problem_description")
+        problem_graph.add((problem_description, ServiceNamespace.Predict, ServiceNamespace.Sine))
+        problem_graph.add((problem_description, ServiceNamespace.Input, ServiceNamespace.Float))
+        problem_graph.add((problem_description, ServiceNamespace.Output, ServiceNamespace.Float))
+
+        serialized_graph = problem_graph.serialize(format="json-ld")
+
+        self._model_finder._set_graph(self._graph)
+
+        self.assertRaises(IllegalGraphException, self._model_finder.search_store, serialized_graph)
+
+    def test_find_model_with_illegl_problem_graph(self):
         pass
+        '''

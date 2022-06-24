@@ -17,6 +17,8 @@ class Connection:
 
         if function == "getModel":
             topic = "/service/getModel"
+        elif function == "searchModel":
+            topic = "/service/searchModel"
 
         subscribe.callback(
             callback, topic, hostname=HOSTNAME

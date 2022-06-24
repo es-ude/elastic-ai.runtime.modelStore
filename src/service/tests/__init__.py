@@ -8,3 +8,4 @@ from .test_service_commands import TestServiceCommands
 from .system_test_get_model import SystemTestGetModel
 from .helper_model_store_test import SetUpModelStore
 from .integration_test_model_finder import TestModelFinder
+from .system_test_search_model import SystemTestSearchModel

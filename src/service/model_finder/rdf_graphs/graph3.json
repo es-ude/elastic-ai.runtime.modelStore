@@ -28,6 +28,11 @@
         {
           "@id": "http://platzhalter.de/service_namespaceSine"
         }
+      ],
+      "http://platzhalter.de/service_namespaceSize": [
+        {
+          "@value": 1100
+        }
       ]
     }
   ]

@@ -19,7 +19,7 @@ class RequestHandler:
         # messageStr = str(message)
         decoded_message = message_str.split("$")  # $=Trennzeichen
         if 2 != len(decoded_message):
-            raise IllegalInput("Message must contain only node_id and model_uri sperated by '$'")
+            raise IllegalInput("Message must contain only node_id and model_uri or problem_praph sperated by '$'")
 
         return int(decoded_message[0]), decoded_message[1]
 
@@ -33,5 +33,19 @@ class RequestHandler:
         client_thread = threading.Thread(target=client.get_and_serve_model, args=(model_uri, ))
         client_thread.start()
 
+    def _on_message_search_model(self, client, _userdata, message):
+        decoded_message = self._get_input_from_message(message)
+        node_id = decoded_message[0]
+        problem_graph = decoded_message[1]
+
+        client = ClientConnection(node_id, self._service_commands)
+        client_thread = threading.Thread(target=client.search_for_model, args=(problem_graph, ))
+        client_thread.start()
+
     def wait_for_elastic_node(self):
-        Connection().receive(self._on_message_get_model, "getModel")
+        connection = Connection()
+        get_model_thread = threading.Thread(target=connection.receive, args=(self._on_message_get_model, "getModel", ))
+        search_model_thread = threading.Thread(target=connection.receive, args=(self._on_message_search_model, "searchModel", ))
+
+        get_model_thread.start()
+        search_model_thread.start()

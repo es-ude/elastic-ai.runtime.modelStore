@@ -7,7 +7,7 @@ class IllegalGraphException(Exception):
 class ModelFinder:
 
     def __init__(self):
-        pass
+        self._graph = None
 
     #todo:statt None Priority
     def _check_triple_for_optional(self, request_graph, p):
@@ -16,9 +16,11 @@ class ModelFinder:
         else:
             return False
 
+    #todo: in case of multiple results, sort by accuracy
     def create_query(self, request_graph, use_optional_requirements=True):
-        model_query = "SELECT DISTINCT ?Model\nWHERE {\n"
         base_uri = "http://platzhalter.de/service_namespace"
+        prefix = "PREFIX service_namespace: <"+ base_uri + ">\n"
+        model_query = prefix + "SELECT DISTINCT ?Model\nWHERE {\n"
         base_uri_length = len(base_uri)
         uri_string_in_sparql_syntax = "service_namespace:"
         for s, p, o in request_graph.triples((URIRef("http://platzhalter.de/problem_description"), None, None)):
@@ -61,7 +63,7 @@ class ModelFinder:
     def _set_graph(self, graph):
         self._graph = graph
 
-    def search_store(self, serialized_request_graph)->URIRef:
+    def search_for_model(self, serialized_request_graph)->URIRef:
         request_graph = Graph()
         request_graph.parse(data=serialized_request_graph, format="json-ld")
 

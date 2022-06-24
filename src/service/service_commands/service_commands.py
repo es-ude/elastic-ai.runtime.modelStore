@@ -4,8 +4,9 @@ from service.entities import Model
 
 
 class ServiceCommands:
-    def __init__(self, store_connection):
+    def __init__(self, store_connection, model_finder):
         self._store_connection = store_connection
+        self._model_finder = model_finder
 
     def _parse_model_uri(self, model_uri: str) -> bytes:
         if not isinstance(model_uri, str):
@@ -23,3 +24,10 @@ class ServiceCommands:
     def get_model(self, model_uri: str) -> Model:
         model_hash = self._parse_model_uri(model_uri)
         return self._store_connection.get_model(model_hash)
+
+    def search_model(self, problem_graph):
+        #Todo: Graphs should be loaded from the model Store's metadata
+        store_graph = self._model_finder.load_graph()
+        self._model_finder._set_graph(store_graph)
+        model_uri = self._model_finder.search_for_model(problem_graph)
+        return model_uri
