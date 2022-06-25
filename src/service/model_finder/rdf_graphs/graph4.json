@@ -4,11 +4,6 @@
       "@type": [
         "http://platzhalter.de/service_namespaceModel"
       ],
-      "http://platzhalter.de/service_namespaceAccuracy": [
-        {
-          "@value": 0.5
-        }
-      ],
       "http://platzhalter.de/service_namespaceInput": [
         {
           "@id": "http://platzhalter.de/service_namespaceFloat"
@@ -31,7 +26,7 @@
       ],
       "http://platzhalter.de/service_namespaceSize": [
         {
-          "@value": 2000
+          "@value": 100
         }
       ]
     }

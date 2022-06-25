@@ -41,6 +41,10 @@ class ModelFinder:
                 model_query += "\t?Model " + p_string + " " + o_string + " .\n"
 
         model_query += "}"
+
+        #sort results:
+        model_query = model_query + "ORDER BY DESC(?Accuracy)"
+
         return model_query
 
     def load_graph(self):
@@ -78,5 +82,6 @@ class ModelFinder:
             if len(qres) == 0:
                 raise ModelNotFound
 
+        #Only the first result will be returned. Allways the one with the highest Accuracy
         for row in qres:
             return row.Model

@@ -23,7 +23,9 @@ class TestModelFinder(unittest.TestCase):
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Predict service_namespace:Sine .
-        }"""
+        }
+        ORDER BY DESC(?Accuracy)
+        """
         self._graph.add((self._test_model, ServiceNamespace.Predict, ServiceNamespace.Sine))
         test_query_result = self._model_finder.create_query(self._graph)
 
@@ -38,7 +40,9 @@ class TestModelFinder(unittest.TestCase):
         WHERE {
             ?Model service_namespace:Size ?Size .
         FILTER (?Size <= 1500)
-        }"""
+        }
+        ORDER BY DESC(?Accuracy)
+        """
         self._graph.add((self._test_model, ServiceNamespace.Size, Literal(1500, datatype=XSD.integer)))
         test_query_result = self._model_finder.create_query(self._graph)
 
@@ -53,7 +57,9 @@ class TestModelFinder(unittest.TestCase):
         WHERE {
             ?Model service_namespace:Accuracy ?Accuracy .
         FILTER (?Accuracy >= 0.8)
-        }"""
+        }
+        ORDER BY DESC(?Accuracy)
+        """
         self._graph.add((self._test_model, ServiceNamespace.Accuracy, Literal(0.8, datatype=XSD.double)))
         test_query_result = self._model_finder.create_query(self._graph)
 
