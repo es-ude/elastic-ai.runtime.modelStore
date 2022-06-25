@@ -1,7 +1,8 @@
 import unittest
 
 from service.request_handler import RequestHandler, IllegalInput
-from service.mocks import MockServiceCommands, MockMessage
+from service.mocks import MockServiceCommands
+
 
 PUBLIC_BROKER = "broker.hivemq.com"
 
@@ -12,20 +13,15 @@ class TestRequestHandler(unittest.TestCase):
 
     def test_get_node_from_message(self):
         message_str = "55$some model"
-        message = MockMessage(message_str)
-        self.assertEqual(55, self._handler._get_input_from_message(message)[0])
+        message = message_str.encode()
+        self.assertEqual(55, self._handler._decode_message(message)[0])
 
-    def test_get_model_from_message(self):
+    def test_get_arguments_from_message(self):
         message_str = "55$some model"
-        message = MockMessage(message_str)
-        self.assertEqual("some model", self._handler._get_input_from_message(message)[1])
+        message = message_str.encode()
+        self.assertEqual(["some model"], self._handler._decode_message(message)[1])
 
     def test_get_with_short_input(self):
         message_str = "55somemodel"
-        message = MockMessage(message_str)
-        self.assertRaises(IllegalInput, self._handler._get_input_from_message, message)
-
-    def test_get_with_long_input(self):
-        message_str = "55$seomeModel$anotherModel"
-        message = MockMessage(message_str)
-        self.assertRaises(IllegalInput, self._handler._get_input_from_message, message)
+        message = message_str.encode()
+        self.assertRaises(IllegalInput, self._handler._decode_message, message)

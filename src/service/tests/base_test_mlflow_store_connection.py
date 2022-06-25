@@ -1,7 +1,8 @@
 import unittest
 
 from service.entities import Model
-from service.store_connection.mlflow import MLflowStoreConnection, ModelNotFound
+from service.errors import IllegalInput, ModelNotFound
+from service.store_connection.mlflow import MLflowStoreConnection
 
 
 class BaseTestMLflowStoreConnection(unittest.TestCase):
@@ -23,7 +24,9 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
         self.assertEqual(model.data_url, self.reference_model_data_url)
 
     def test_get_nonexistent_model(self):
-        self.assertRaises(ModelNotFound, self.store_connection.get_model, b"invalid hash".ljust(32, b"-"))
+        self.assertRaises(
+            ModelNotFound, self.store_connection.get_model, b"invalid hash".ljust(32, b"-")
+        )
 
     def test_get_model_with_invalid_hash(self):
         for invalid_hash in (None, 1234):
@@ -31,4 +34,4 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
                 self.assertRaises(TypeError, self.store_connection.get_model, invalid_hash)
 
         with self.subTest(b"too short"):
-            self.assertRaises(ValueError, self.store_connection.get_model, b"too short")
+            self.assertRaises(IllegalInput, self.store_connection.get_model, b"too short")

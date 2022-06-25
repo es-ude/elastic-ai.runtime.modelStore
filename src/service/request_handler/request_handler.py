@@ -1,51 +1,64 @@
-from paho.mqtt import subscribe
-import hashlib
 import threading
-from urllib.parse import urlparse
-from service.client_connection import ModelServer
+import traceback
+
 from service.application_layer_connection import ApplicationLayerConnection
-
-
-class IllegalInput(Exception):
-    pass
+from service.client_connection import ModelServer
+from service.errors import IllegalInput
 
 
 class RequestHandler:
     def __init__(self, service_commands):
         self._service_commands = service_commands
 
-    def _get_input_from_message(self, message) -> tuple[int, str]:
-        message_str = bytes.decode(message.payload)
-        # messageStr = str(message)
+    def _decode_message(self, message: bytes) -> tuple[int, list[str]]:
+        message_str = message.decode()
         decoded_message = message_str.split("$")  # $=Trennzeichen
-        if 2 != len(decoded_message):
-            raise IllegalInput("Message must contain only client_id and model_uri or problem_praph sperated by '$'")
+        if len(decoded_message) < 2:
+            raise IllegalInput(
+                "Message should consist of the client ID and arguments, separated by '$'"
+            )
 
-        return int(decoded_message[0]), decoded_message[1]
+        try:
+            client_id = int(decoded_message[0])
+        except ValueError as e:
+            raise IllegalInput("Client ID should be an integer value") from e
+
+        return client_id, decoded_message[1:]
 
     def _on_message_get_model(self, client, _userdata, message):
-        # todo: catch illegalInput Exception and send feedback to Elastic Node?
-        decoded_message = self._get_input_from_message(message)
-        client_id = decoded_message[0]
-        model_uri = decoded_message[1]
+        try:
+            client_id, arguments = self._decode_message(message.payload)
 
-        client = ModelServer(client_id, self._service_commands)
-        client_thread = threading.Thread(target=client.serve_model, args=(model_uri, ))
-        client_thread.start()
+            client = ModelServer(client_id, self._service_commands)
+            client_thread = threading.Thread(target=client.serve_model, args=(arguments, ))
+            client_thread.start()
+        except Exception:
+            # can't send exception to client here since we don't know the right node id to send to
+            print(f"Request handler exception while handling getModel request {message.payload}:")
+            traceback.print_exc()
 
     def _on_message_search_model(self, client, _userdata, message):
-        decoded_message = self._get_input_from_message(message)
-        client_id = decoded_message[0]
-        problem_graph = decoded_message[1]
+        try:
+            client_id, arguments = self._decode_message(message.payload)
 
-        client = ModelServer(client_id, self._service_commands)
-        client_thread = threading.Thread(target=client.search_for_model, args=(problem_graph, ))
-        client_thread.start()
+            client = ModelServer(client_id, self._service_commands)
+            client_thread = threading.Thread(target=client.search_for_model, args=(arguments, ))
+            client_thread.start()
+        except Exception:
+            # can't send exception to client here since we don't know the right node id to send to
+            print(f"Request handler exception while handling getModel request {message.payload}:")
+            traceback.print_exc()
 
     def wait_for_elastic_node(self):
         connection = ApplicationLayerConnection()
-        get_model_thread = threading.Thread(target=connection.receive, args=(self._on_message_get_model, "getModel", ))
-        search_model_thread = threading.Thread(target=connection.receive, args=(self._on_message_search_model, "searchModel", ))
+        get_model_thread = threading.Thread(
+            target=connection.receive,
+            args=(self._on_message_get_model, "getModel", )
+        )
+        search_model_thread = threading.Thread(
+            target=connection.receive,
+            args=(self._on_message_search_model, "searchModel", )
+        )
 
         get_model_thread.start()
         search_model_thread.start()

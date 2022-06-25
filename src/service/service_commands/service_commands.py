@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 
 from service.entities import Model
+from service.errors import IllegalInput
 
 
 class ServiceCommands:
@@ -14,12 +15,12 @@ class ServiceCommands:
 
         parsed_uri = urlparse(model_uri)
         if parsed_uri.scheme != "model":
-            raise ValueError(f"Invalid model_uri '{model_uri}', expected scheme 'model:'")
+            raise IllegalInput(f"Invalid model_uri '{model_uri}', expected scheme 'model:'")
         try:
             model_hash = bytes.fromhex(parsed_uri.path)
             return model_hash
-        except ValueError:
-            raise ValueError(f"Invalid model_uri '{model_uri}', invalid model hash")
+        except ValueError as e:
+            raise IllegalInput(f"Invalid model_uri '{model_uri}', invalid model hash") from e
 
     def get_model(self, model_uri: str) -> Model:
         model_hash = self._parse_model_uri(model_uri)

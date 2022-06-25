@@ -1,16 +1,15 @@
 import _thread
 import time
 import unittest
-import threading
 
 from paho.mqtt import subscribe
 
 from service.client_connection import ModelServer
+from service.errors import ErrorCode
 from service.mocks import MockServiceCommands, MockModel
 
 
 CLIENT_ID = 1
-MODEL_NOT_FOUND_ERROR = b"1"
 HOSTNAME= "broker.hivemq.com"
 
 
@@ -30,7 +29,7 @@ class IntegrationTestModelServer(unittest.TestCase):
         _thread.exit()
 
     def _deliver_model_not_found(self, client, userdata, message):
-        self.assertEqual(message.payload, MODEL_NOT_FOUND_ERROR)
+        self.assertEqual(message.payload, ("!" + str(int(ErrorCode.MODEL_NOT_FOUND))).encode())
         self._verified = True
         _thread.exit()
 
@@ -50,7 +49,10 @@ class IntegrationTestModelServer(unittest.TestCase):
         self._start_client_with_callback(self._deliver_model_not_found)
         time.sleep(0.5)
 
-        self._client.serve_model("unknown_model")
+        self._client.serve_model(
+            # b"invalid hash".ljust(32, b"-")
+            ["model:696e76616c696420686173682d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d"]
+        )
         time.sleep(1)
         self.assertTrue(self._verified)
 

@@ -1,8 +1,7 @@
 from rdflib import Graph, URIRef
-from service.store_connection import ModelNotFound
+from service.errors import ModelNotFound
 from service.service_namespace import ServiceNamespace
 import os
-
 URI_STRING_IN_SPARQL_SYNTAX = "service_namespace:"
 
 class ModelUriFinder:

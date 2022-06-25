@@ -1,26 +1,15 @@
 import hashlib
-import tempfile
-from pathlib import Path
-from urllib.parse import urlparse
 
 import mlflow
 import requests
 import yaml
-from mlflow.exceptions import MlflowException
 from mlflow.store.artifact.mlflow_artifacts_repo import MlflowArtifactsRepository
 
 from service.entities import Model
+from service.errors import IllegalInput, ModelNotFound
 
 
 MODEL_STAGE = "None"
-
-
-class MLflowStoreError(Exception):
-    pass
-
-
-class ModelNotFound(MLflowStoreError):
-    pass
 
 
 class MLflowStoreConnection:
@@ -59,10 +48,12 @@ class MLflowStoreConnection:
         if not isinstance(model_hash, bytes):
             raise TypeError("model_hash")
         if len(model_hash) != hashlib.sha256().digest_size:
-            raise ValueError("model_hash")
+            raise IllegalInput("model_hash")
 
         all_versions = self.client.search_model_versions("")
-        matching_versions = [v for v in all_versions if bytes.fromhex(v.tags.get("hash", "")) == model_hash]
+        matching_versions = [
+            v for v in all_versions if bytes.fromhex(v.tags.get("hash", "")) == model_hash
+        ]
 
         if len(matching_versions) == 0:
             raise ModelNotFound

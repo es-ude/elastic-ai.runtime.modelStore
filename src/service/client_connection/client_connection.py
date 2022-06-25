@@ -1,9 +1,7 @@
-from platform import node
-from service.store_connection import ModelNotFound
+import traceback
+
 from service.application_layer_connection import ApplicationLayerConnection
-
-
-MODEL_NOT_FOUND_ERROR = b"1"  # gets send to the client, if the model could not be found
+from service.errors import ErrorCode, IllegalInput, ModelStoreError
 
 
 class ModelServer:
@@ -12,42 +10,49 @@ class ModelServer:
         self._service_commands = service_commands
         self._connection = ApplicationLayerConnection()
 
-    def get_model(self, model_uri: str):
+    def _send_error(self, error_code: ErrorCode):
+        # prefix all error messages with '!'
+        self._connection.send(self._client_id, ("!" + str(int(error_code))).encode())
+
+    def _decode_get_model(self, arguments: list[str]) -> str:
+        if len(arguments) != 1:
+            raise IllegalInput("getModel request should have 1 argument: model_id")
+
+        return arguments[0]
+
+    def _decode_search_model(self, arguments: list[str]) -> str:
+        if len(arguments) != 1:
+            raise IllegalInput("searchModel request should have 1 argument: problem_graph")
+
+        return arguments[0]
+
+    def _get_model(self, model_uri: str):
         model = self._service_commands.get_model(model_uri)
         return model.data_url
 
     def serve(self, model_data_url: str):
         self._connection.send(self._client_id, model_data_url)
 
-    def _send_model_not_found(self):
-        self._connection.send(self._client_id, MODEL_NOT_FOUND_ERROR)
-
-    def serve_model(self, model_uri: str):
+    def serve_model(self, arguments: list[str]):
         try:
-            model_data_url = self.get_model(model_uri)
+            model_uri = self._decode_get_model(arguments)
+            model_data_url = self._get_model(model_uri)
             self.serve(model_data_url)
-        except ModelNotFound:
-            self._send_model_not_found()
+        except ModelStoreError as e:
+            self._send_error(e.error_code)
+        except Exception:
+            self._send_error(ErrorCode.OTHER)
+            print(f"Exception while handling getModel request from {self._client_id}, arguments {arguments}:")
+            traceback.print_exc()
 
-    def search_for_model(self, problem_graph):
+    def search_for_model(self, arguments: list[str]):
         try:
+            problem_graph = self._decode_search_model(arguments)
             model_uri = self._service_commands.search_model(problem_graph)
             self.serve(model_uri)
-        except ModelNotFound:
-            self._send_model_not_found()    #is it better to use a different exception?
-
-''''
-class ClientConnection:
-    def __init__(self, node_id, service_commands, hostname):
-        ...
-
-
-def client_connection_factory(hostname):
-    def create_client_connection(node_id, service_commands):
-        return ClientConnection(node_id, service_commands, hostname)
-    return create_client_connection
-
-from functools import partial
-
-HiveMQClientConnection = partial(ClientConnection, hostname="broker.hivemq.com")
-'''
+        except ModelStoreError as e:
+            self._send_error(e.error_code)
+        except Exception:
+            self._send_error(ErrorCode.OTHER)
+            print(f"Exception while handling searchModel request from {self._client_id}, arguments {arguments}:")
+            traceback.print_exc()

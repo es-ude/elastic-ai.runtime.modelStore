@@ -1,8 +1,8 @@
 import unittest
 
 from service.client_connection import ModelServer
+from service.errors import ModelNotFound
 from service.mocks import MockServiceCommands
-from service.store_connection import ModelNotFound
 
 
 CLIENT_ID = 1
@@ -20,10 +20,14 @@ class TestModelServer(unittest.TestCase):
         self.assertEqual(None, client._service_commands)
 
     def test_get_model(self):
-        self.assertEqual("http://example.com/model/model.tflite", self._client.get_model("model:6d6f636b")) # 'mock'
+        self.assertEqual(
+            "http://example.com/model/model.tflite", self._client._get_model("model:6d6f636b")
+        ) # 'mock'
 
     def test_get_model_model_not_found(self):
-        self.assertRaises(ModelNotFound, self._client.get_model, "model:696e76616c6964") # 'invalid'
+        self.assertRaises(
+            ModelNotFound, self._client._get_model, "model:696e76616c6964"
+        ) # 'invalid'
 
     def tearDown(self):
         pass
