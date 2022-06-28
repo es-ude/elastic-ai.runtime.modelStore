@@ -1,5 +1,5 @@
-from .test_client_connection import TestClientConnection
-from .integration_test_client_connection import IntegrationTestClientConnection
+from .test_client_connection import TestModelServer
+from .integration_test_client_connection import IntegrationTestModelServer
 from .test_request_handler import TestRequestHandler
 from .integration_test_request_handler import IntegrationTestRequestHandler
 from .test_mlflow_store_connection import TestMLflowStoreConnection

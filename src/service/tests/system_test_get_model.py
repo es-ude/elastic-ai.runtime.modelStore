@@ -9,7 +9,7 @@ from pathlib import Path
 import _thread
 import requests
 
-NODE_ID = 1
+CLIENT_ID = 1
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
@@ -23,7 +23,7 @@ class SystemTestGetModel(unittest.TestCase):
         _thread.start_new_thread(self._monitor.run, ())
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(NODE_ID), hostname=PUBLIC_HOSTNAME, )
+        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=PUBLIC_HOSTNAME, )
 
     def _start_client_with_callback(self, callback):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
@@ -47,7 +47,7 @@ class SystemTestGetModel(unittest.TestCase):
     def _request_model_from_service(self):
         model_name = "model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10"
         seperator = "$"
-        message = str(NODE_ID)+seperator+model_name
+        message = str(CLIENT_ID)+seperator+model_name
         publish.single("/service/getModel", message, hostname=PUBLIC_HOSTNAME)
 
     def _set_up_model_store(self):

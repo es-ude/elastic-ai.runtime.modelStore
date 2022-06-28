@@ -1,1 +1,1 @@
-from .client_connection import ClientConnection
+from .client_connection import ModelServer

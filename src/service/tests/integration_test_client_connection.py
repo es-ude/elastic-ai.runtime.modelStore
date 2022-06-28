@@ -5,27 +5,27 @@ import threading
 
 from paho.mqtt import subscribe
 
-from service.client_connection import ClientConnection
+from service.client_connection import ModelServer
 from service.mocks import MockServiceCommands, MockModel
 
 
-NODE_ID = 1
+CLIENT_ID = 1
 MODEL_NOT_FOUND_ERROR = b"1"
 HOSTNAME= "broker.hivemq.com"
 
 
-class IntegrationTestClientConnection(unittest.TestCase):
+class IntegrationTestModelServer(unittest.TestCase):
     def setUp(self) -> None:
         self._service_commands = MockServiceCommands()
-        self._client = ClientConnection(NODE_ID, self._service_commands)
+        self._client = ModelServer(CLIENT_ID, self._service_commands)
         self._model = MockModel()
         self._verified = False
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(NODE_ID), hostname=HOSTNAME)
+        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=HOSTNAME)
 
     def _deliver(self, client, userdata, message):
-        self.assertEquals(message.payload, b"http://example.com/model/model.tflite")
+        self.assertEqual(message.payload, b"http://example.com/model/model.tflite")
         self._veryfied = True
         _thread.exit()
 
@@ -48,11 +48,10 @@ class IntegrationTestClientConnection(unittest.TestCase):
 
     def test_client_receives_error_after_requesting_unknown_model(self):
         self._start_client_with_callback(self._deliver_model_not_found)
-        #clientThread.start()
         time.sleep(0.5)
 
-        self._client.get_and_serve_model("unknown_model")
-        time.sleep(0.5)
+        self._client.serve_model("unknown_model")
+        time.sleep(1)
         self.assertTrue(self._verified)
 
     def tearDown(self):

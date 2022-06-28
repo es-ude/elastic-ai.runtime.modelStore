@@ -12,7 +12,7 @@ from rdflib import Graph, URIRef, Literal, RDF
 from service.service_namespace import ServiceNamespace
 from rdflib.namespace import XSD
 
-NODE_ID = 1
+CLIENT_ID = 1
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
@@ -26,7 +26,7 @@ class SystemTestSearchModel(unittest.TestCase):
         _thread.start_new_thread(self._monitor.run, ())
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(NODE_ID), hostname=PUBLIC_HOSTNAME, )
+        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=PUBLIC_HOSTNAME, )
 
     def _start_client_with_callback(self, callback):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
@@ -49,7 +49,7 @@ class SystemTestSearchModel(unittest.TestCase):
         problem_graph.add((problem_description, ServiceNamespace.Accuracy, Literal(0.9, datatype=XSD.double)))
         serialized_graph = problem_graph.serialize(format="json-ld")
 
-        message = str(NODE_ID) + "$" + serialized_graph
+        message = str(CLIENT_ID) + "$" + serialized_graph
         publish.single("/service/searchModel", message, hostname=PUBLIC_HOSTNAME)
 
 

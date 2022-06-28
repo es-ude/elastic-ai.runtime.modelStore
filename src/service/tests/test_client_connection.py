@@ -1,22 +1,22 @@
 import unittest
 
-from service.client_connection import ClientConnection
+from service.client_connection import ModelServer
 from service.mocks import MockServiceCommands
 from service.store_connection import ModelNotFound
 
 
-NODE_ID = 1
+CLIENT_ID = 1
 PUBLIC_BROKER = "broker.hivemq.com"
 
-class TestClientConnection(unittest.TestCase):
+class TestModelServer(unittest.TestCase):
     def setUp(self):
         self._service_commands = MockServiceCommands()
-        self._client = ClientConnection(NODE_ID, self._service_commands)
+        self._client = ModelServer(CLIENT_ID, self._service_commands)
 
     # pylint: disable=protected-access
     def test_constructor_call(self):
-        client = ClientConnection(NODE_ID, None)
-        self.assertEqual(NODE_ID, client._node_id)
+        client = ModelServer(CLIENT_ID, None)
+        self.assertEqual(CLIENT_ID, client._client_id)
         self.assertEqual(None, client._service_commands)
 
     def test_get_model(self):

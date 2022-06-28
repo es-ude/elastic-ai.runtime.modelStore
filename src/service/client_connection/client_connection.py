@@ -1,28 +1,28 @@
 from platform import node
 from service.store_connection import ModelNotFound
-from service.connection import Connection
+from service.application_layer_connection import ApplicationLayerConnection
 
 
 MODEL_NOT_FOUND_ERROR = b"1"  # gets send to the client, if the model could not be found
 
 
-class ClientConnection:
-    def __init__(self, node_id, service_commands):
-        self._node_id = node_id
+class ModelServer:
+    def __init__(self, client_id, service_commands):
+        self._client_id = client_id
         self._service_commands = service_commands
-        self._connection = Connection()
+        self._connection = ApplicationLayerConnection()
 
     def get_model(self, model_uri: str):
         model = self._service_commands.get_model(model_uri)
         return model.data_url
 
     def serve(self, model_data_url: str):
-        self._connection.send(self._node_id, model_data_url)
+        self._connection.send(self._client_id, model_data_url)
 
     def _send_model_not_found(self):
-        self._connection.send(self._node_id, MODEL_NOT_FOUND_ERROR)
+        self._connection.send(self._client_id, MODEL_NOT_FOUND_ERROR)
 
-    def get_and_serve_model(self, model_uri: str):
+    def serve_model(self, model_uri: str):
         try:
             model_data_url = self.get_model(model_uri)
             self.serve(model_data_url)
