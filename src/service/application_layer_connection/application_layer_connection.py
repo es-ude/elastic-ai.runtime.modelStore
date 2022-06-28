@@ -1,15 +1,15 @@
 from paho.mqtt import subscribe, publish
-
-#todo: config file
-HOSTNAME = "broker.hivemq.com"
+import configparser
 
 class ApplicationLayerConnection:
     def __init__(self):
-        pass
+        self._config = configparser.ConfigParser()
+        self._config.read('configfile.ini')
+        self._hostname = self._config['DEFAULT']['Hostname']
 
     def send(self, client_id, payload):
         topic = "/" + str(client_id)
-        publish.single(topic, payload=payload, hostname=HOSTNAME)
+        publish.single(topic, payload=payload, hostname=self._hostname)
 
 
     def receive(self, callback, function: str):
@@ -21,5 +21,5 @@ class ApplicationLayerConnection:
             topic = "/service/searchModel"
 
         subscribe.callback(
-            callback, topic, hostname=HOSTNAME
+            callback, topic, hostname=self._hostname
         )
