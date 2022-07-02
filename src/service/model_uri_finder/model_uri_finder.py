@@ -8,6 +8,9 @@ class ModelUriFinder:
 
     def __init__(self):
         self._graph = None
+        self._base_uri = "http://platzhalter.de/service_namespace"
+        self._base_uri_length = len(self._base_uri)
+
 
     #todo:statt None Priority
     def _check_triple_for_optional(self, request_graph, p):
@@ -16,28 +19,42 @@ class ModelUriFinder:
         else:
             return False
 
-    def create_query(self, request_graph, use_optional_requirements=True):
-        base_uri = "http://platzhalter.de/service_namespace"
-        prefix = "PREFIX service_namespace: <"+ base_uri + ">\n"
+    def _initialize_query_string(self):
+        prefix = "PREFIX service_namespace: <"+ self._base_uri + ">\n"
         model_query = prefix + "SELECT DISTINCT ?Model\nWHERE {\n"
-        base_uri_length = len(base_uri)
+        return model_query
+
+    def _query_add_size(self, model_query, p_string, size):
+        model_query += "\t?Model " + p_string  + " " + "?Size" + " .\n" + "FILTER (?Size <= "+ str(size)  + ")\n"
+        return model_query
+
+    def _query_add_accuracy(self, model_query, p_string, accuracy):
+        model_query += "\t?Model " + p_string  + " " + "?Accuracy" + " .\n" + "FILTER (?Accuracy >= "+ str(accuracy)  + ")\n"
+        return model_query
+
+    def _query_add_regular_requirement(self, model_query, p_string, o_string):
+        model_query += "\t?Model " + p_string + " " + o_string + " .\n"
+        return model_query
+
+    def create_query(self, request_graph, use_optional_requirements=True):
+        model_query = self._initialize_query_string()
         uri_string_in_sparql_syntax = "service_namespace:"
         for s, p, o in request_graph.triples((URIRef("http://platzhalter.de/problem_description"), None, None)):
 
-            p_string = uri_string_in_sparql_syntax+p[base_uri_length:]
+            p_string = uri_string_in_sparql_syntax+p[self._base_uri_length:]
 
             if (not use_optional_requirements) and self._check_triple_for_optional(request_graph, p):
                 continue
 
             if(p_string == "service_namespace:Size"):
-                model_query += "\t?Model " + p_string  + " " + "?Size" + " .\n" + "FILTER (?Size <= "+ str(o)  + ")\n"
+                model_query = self._query_add_size(model_query, p_string, o)
                 continue
             elif(p_string  == "service_namespace:Accuracy"):
-                model_query += "\t?Model " + p_string  + " " + "?Accuracy" + " .\n" + "FILTER (?Accuracy >= "+ str(o)  + ")\n"
+                model_query = self._query_add_accuracy(model_query, p_string, o)
                 continue
             else:
-                o_string = uri_string_in_sparql_syntax+o[base_uri_length:]
-                model_query += "\t?Model " + p_string + " " + o_string + " .\n"
+                o_string = uri_string_in_sparql_syntax+o[self._base_uri_length:]
+                model_query = self._query_add_regular_requirement(model_query, p_string, o_string)
 
         model_query += "}"
 
@@ -59,6 +76,12 @@ class ModelUriFinder:
         model_graph = model_graph + Graph().parse(data=graph_file_2.read(), format="json-ld")
         model_graph = model_graph + Graph().parse(data=graph_file_3.read(), format="json-ld")
         model_graph = model_graph + Graph().parse(data=graph_file_4.read(), format="json-ld")
+
+        graph_file_1.close()
+        graph_file_2.close()
+        graph_file_3.close()
+        graph_file_4.close()
+
 
         return model_graph
         #todo: soll unabhängig vom gestarteten verzeichnis sein.
