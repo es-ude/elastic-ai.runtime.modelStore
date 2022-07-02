@@ -1,5 +1,5 @@
 import unittest
-from service.model_finder import ModelFinder, IllegalGraphException
+from service.model_uri_finder import ModelUriFinder, IllegalGraphException
 from rdflib import Graph, URIRef, Literal, RDF
 from service.service_namespace import ServiceNamespace
 from rdflib.namespace import XSD
@@ -12,7 +12,7 @@ def clean_string(string):
 
 class TestModelFinder(unittest.TestCase):
     def setUp(self):
-        self._model_finder = ModelFinder()
+        self._model_finder = ModelUriFinder()
         self._test_model = URIRef("http://platzhalter.de/problem_description")
         self._graph = Graph()
         self._graph.bind("service_namespace", ServiceNamespace)

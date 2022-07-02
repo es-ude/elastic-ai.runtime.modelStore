@@ -4,7 +4,7 @@ from service.store_connection import ModelNotFound
 class IllegalGraphException(Exception):
     pass
 
-class ModelFinder:
+class ModelUriFinder:
 
     def __init__(self):
         self._graph = None
@@ -16,7 +16,6 @@ class ModelFinder:
         else:
             return False
 
-    #todo: in case of multiple results, sort by accuracy
     def create_query(self, request_graph, use_optional_requirements=True):
         base_uri = "http://platzhalter.de/service_namespace"
         prefix = "PREFIX service_namespace: <"+ base_uri + ">\n"
@@ -48,7 +47,7 @@ class ModelFinder:
         return model_query
 
     def load_graph(self):
-        path = "service/model_finder/rdf_graphs/"
+        path = "service/model_uri_finder/rdf_graphs/"
         graph_file_1 = open(path+'graph.json','r')
         graph_file_2 = open(path+'graph2.json','r')
         graph_file_3 = open(path+'graph3.json','r')
