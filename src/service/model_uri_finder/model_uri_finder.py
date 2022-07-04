@@ -1,8 +1,9 @@
 from rdflib import Graph, URIRef
 from service.store_connection import ModelNotFound
+from service.service_namespace import ServiceNamespace
+import os
 
-class IllegalGraphException(Exception):
-    pass
+URI_STRING_IN_SPARQL_SYNTAX = "service_namespace:"
 
 class ModelUriFinder:
 
@@ -11,13 +12,10 @@ class ModelUriFinder:
         self._base_uri = "http://platzhalter.de/service_namespace"
         self._base_uri_length = len(self._base_uri)
 
-
-    #todo:statt None Priority
     def _check_triple_for_optional(self, request_graph, p):
-        for triple in request_graph.triples((p, None, None)):
+        for triple in request_graph.triples((p, ServiceNamespace.Priority, ServiceNamespace.Optional)):
             return True
-        else:
-            return False
+        return False
 
     def _initialize_query_string(self):
         prefix = "PREFIX service_namespace: <"+ self._base_uri + ">\n"
@@ -36,12 +34,19 @@ class ModelUriFinder:
         model_query += "\t?Model " + p_string + " " + o_string + " .\n"
         return model_query
 
+    def _query_get_uri_in_sparql_syntax(self, uri:str):
+        return URI_STRING_IN_SPARQL_SYNTAX+uri[self._base_uri_length:]
+
+    def _query_add_end(self, model_query):
+        model_query += "}"
+        model_query = model_query + "ORDER BY DESC(?Accuracy)"
+        return model_query
+
     def create_query(self, request_graph, use_optional_requirements=True):
         model_query = self._initialize_query_string()
-        uri_string_in_sparql_syntax = "service_namespace:"
         for s, p, o in request_graph.triples((URIRef("http://platzhalter.de/problem_description"), None, None)):
 
-            p_string = uri_string_in_sparql_syntax+p[self._base_uri_length:]
+            p_string = self._query_get_uri_in_sparql_syntax(p)
 
             if (not use_optional_requirements):
                 if self._check_triple_for_optional(request_graph,p):
@@ -54,38 +59,24 @@ class ModelUriFinder:
                 model_query = self._query_add_accuracy(model_query, p_string, o)
                 continue
             else:
-                o_string = uri_string_in_sparql_syntax+o[self._base_uri_length:]
+                o_string = self._query_get_uri_in_sparql_syntax(o)
                 model_query = self._query_add_regular_requirement(model_query, p_string, o_string)
 
-        model_query += "}"
-
-        #sort results:
-        model_query = model_query + "ORDER BY DESC(?Accuracy)"
+        model_query = self._query_add_end(model_query)
 
         return model_query
 
     def load_graph(self):
         path = "service/model_uri_finder/rdf_graphs/"
-        graph_file_1 = open(path+'graph.json','r')
-        graph_file_2 = open(path+'graph2.json','r')
-        graph_file_3 = open(path+'graph3.json','r')
-        graph_file_4 = open(path+'graph4.json','r')
-
-        #+ : Union of both graphs
         model_graph = Graph()
-        model_graph = model_graph + Graph().parse(data=graph_file_1.read(), format="json-ld")
-        model_graph = model_graph + Graph().parse(data=graph_file_2.read(), format="json-ld")
-        model_graph = model_graph + Graph().parse(data=graph_file_3.read(), format="json-ld")
-        model_graph = model_graph + Graph().parse(data=graph_file_4.read(), format="json-ld")
 
-        graph_file_1.close()
-        graph_file_2.close()
-        graph_file_3.close()
-        graph_file_4.close()
-
+        for filename in os.listdir(path):
+            with open(path + filename, 'r') as f: # open in readonly mode
+                #+ : Union of both graphs
+                model_graph = model_graph + Graph().parse(data=f.read(), format="json-ld")
+                f.close()
 
         return model_graph
-        #todo: soll unabhängig vom gestarteten verzeichnis sein.
 
     def _set_graph(self, graph):
         self._graph = graph

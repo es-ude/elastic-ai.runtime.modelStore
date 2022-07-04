@@ -1,5 +1,5 @@
 import unittest
-from service.model_uri_finder import ModelUriFinder, IllegalGraphException
+from service.model_uri_finder import ModelUriFinder
 from rdflib import Graph, URIRef, Literal, RDF
 from service.service_namespace import ServiceNamespace
 from rdflib.namespace import XSD
