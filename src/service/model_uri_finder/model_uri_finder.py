@@ -43,8 +43,9 @@ class ModelUriFinder:
 
             p_string = uri_string_in_sparql_syntax+p[self._base_uri_length:]
 
-            if (not use_optional_requirements) and self._check_triple_for_optional(request_graph, p):
-                continue
+            if (not use_optional_requirements):
+                if self._check_triple_for_optional(request_graph,p):
+                    continue
 
             if(p_string == "service_namespace:Size"):
                 model_query = self._query_add_size(model_query, p_string, o)
