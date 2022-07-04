@@ -1,0 +1,2 @@
+class MockModelUriFinder:
+    pass

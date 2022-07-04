@@ -1,4 +1,5 @@
 mlflow
 paho-mqtt
 pyyaml
+rdflib
 requests

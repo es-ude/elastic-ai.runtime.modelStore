@@ -4,4 +4,7 @@ default:
 run tests:
   script:
     - pip install -r test-requirements.txt
-    - python src/test_suite.py
+    - cd src
+    - python unit_tests.py
+    - python integration_tests.py
+    - python system_test.py

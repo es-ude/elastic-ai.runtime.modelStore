@@ -1,6 +1,6 @@
 import unittest
 
-from service.mocks import MockStoreConnection, MockModel
+from service.mocks import MockStoreConnection, MockModel, MockModelUriFinder
 from service.errors import ModelNotFound
 from service.service_commands import ServiceCommands
 
@@ -11,7 +11,8 @@ MLFLOW_URI = "http://localhost:6000"
 class TestServiceCommands(unittest.TestCase):
     def setUp(self):
         self._store = MockStoreConnection()
-        self._service_commands = ServiceCommands(self._store)
+        self._model_uri_finder = MockModelUriFinder()
+        self._service_commands = ServiceCommands(self._store, self._model_uri_finder)
 
     def test_get_model(self):
         model1 = MockModel()
