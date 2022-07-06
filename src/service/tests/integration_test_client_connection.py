@@ -29,7 +29,7 @@ class IntegrationTestModelServer(unittest.TestCase):
         _thread.exit()
 
     def _deliver_model_not_found(self, client, userdata, message):
-        self.assertEqual(message.payload, ("!" + str(int(ErrorCode.MODEL_NOT_FOUND))).encode())
+        self.assertEqual(message.payload, ("!" + str(int(ErrorCode.MODEL_DATA_NOT_FOUND))).encode())
         self._verified = True
         _thread.exit()
 

@@ -1,5 +1,5 @@
 from service.mocks import MockModel
-from service.errors import ModelNotFound
+from service.errors import ModelDataNotFound
 
 
 class MockStoreConnection:
@@ -10,4 +10,4 @@ class MockStoreConnection:
         if model_hash == b"mock":
             return MockModel()
         else:
-            raise ModelNotFound
+            raise ModelDataNotFound

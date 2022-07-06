@@ -6,7 +6,7 @@ import yaml
 from mlflow.store.artifact.mlflow_artifacts_repo import MlflowArtifactsRepository
 
 from service.entities import Model
-from service.errors import IllegalInput, ModelNotFound
+from service.errors import IllegalInput, ModelDataNotFound
 
 
 MODEL_STAGE = "None"
@@ -35,7 +35,7 @@ class MLflowStoreConnection:
         flavors = model.get_model_info().flavors
         path_and_format = self._get_model_data_path_and_format(flavors)
         if path_and_format is None:
-            raise ModelNotFound("Model has no supported format")
+            raise ModelDataNotFound("Model has no supported format")
 
         path, model_format = path_and_format
         return f"{artifact_url}/{path}", model_format
@@ -56,7 +56,7 @@ class MLflowStoreConnection:
         ]
 
         if len(matching_versions) == 0:
-            raise ModelNotFound
+            raise ModelDataNotFound
         if len(matching_versions) > 1:
             print(f"The store contains more than one model with the hash '{model_hash.hex()}', using the first model found")
 

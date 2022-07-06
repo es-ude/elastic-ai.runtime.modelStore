@@ -1,4 +1,4 @@
-from service.errors import ModelNotFound
+from service.errors import ModelDataNotFound
 
 
 class MockModel:
@@ -19,4 +19,4 @@ class MockServiceCommands:
         if model_uri == "model:6d6f636b": # 'mock'
             return MockModel()
         else:
-            raise ModelNotFound
+            raise ModelDataNotFound

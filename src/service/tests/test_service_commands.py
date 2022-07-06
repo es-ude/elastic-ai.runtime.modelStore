@@ -1,7 +1,7 @@
 import unittest
 
 from service.mocks import MockStoreConnection, MockModel, MockModelUriFinder
-from service.errors import ModelNotFound
+from service.errors import ModelDataNotFound
 from service.service_commands import ServiceCommands
 
 
@@ -27,5 +27,5 @@ class TestServiceCommands(unittest.TestCase):
 
     def test_get_model_model_not_found(self):
         self.assertRaises(
-            ModelNotFound, self._service_commands.get_model, "model:696e76616c6964"
+            ModelDataNotFound, self._service_commands.get_model, "model:696e76616c6964"
         ) # 'invalid'

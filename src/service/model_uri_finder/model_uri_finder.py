@@ -1,5 +1,5 @@
 from rdflib import Graph, URIRef
-from service.errors import ModelNotFound
+from service.errors import ModelUriNotFound
 from service.service_namespace import ServiceNamespace
 import os
 URI_STRING_IN_SPARQL_SYNTAX = "service_namespace:"
@@ -93,7 +93,7 @@ class ModelUriFinder:
             request_query = self.create_query(request_graph, use_optional_requirements=False)
             qres = self._graph.query(request_query)
             if len(qres) == 0:
-                raise ModelNotFound
+                raise ModelUriNotFound
 
         #Only the first result will be returned. Allways the one with the highest Accuracy
         for row in qres:

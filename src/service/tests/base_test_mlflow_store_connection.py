@@ -1,7 +1,7 @@
 import unittest
 
 from service.entities import Model
-from service.errors import IllegalInput, ModelNotFound
+from service.errors import IllegalInput, ModelDataNotFound
 from service.store_connection.mlflow import MLflowStoreConnection
 
 
@@ -25,7 +25,7 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
 
     def test_get_nonexistent_model(self):
         self.assertRaises(
-            ModelNotFound, self.store_connection.get_model, b"invalid hash".ljust(32, b"-")
+            ModelDataNotFound, self.store_connection.get_model, b"invalid hash".ljust(32, b"-")
         )
 
     def test_get_model_with_invalid_hash(self):

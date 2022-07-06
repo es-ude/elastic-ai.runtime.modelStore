@@ -1,7 +1,7 @@
 import unittest
 
 from service.client_connection import ModelServer
-from service.errors import ModelNotFound
+from service.errors import ModelDataNotFound
 from service.mocks import MockServiceCommands
 
 
@@ -26,7 +26,7 @@ class TestModelServer(unittest.TestCase):
 
     def test_get_model_model_not_found(self):
         self.assertRaises(
-            ModelNotFound, self._client._get_model, "model:696e76616c6964"
+            ModelDataNotFound, self._client._get_model, "model:696e76616c6964"
         ) # 'invalid'
 
     def tearDown(self):
