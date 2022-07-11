@@ -3,6 +3,7 @@ from service.errors import ModelUriNotFound
 from service.service_namespace import ServiceNamespace
 import os
 URI_STRING_IN_SPARQL_SYNTAX = "service_namespace:"
+import time
 
 class ModelUriFinder:
 
@@ -97,4 +98,5 @@ class ModelUriFinder:
 
         #Only the first result will be returned. Allways the one with the highest Accuracy
         for row in qres:
+            time.sleep(1)
             return row.Model

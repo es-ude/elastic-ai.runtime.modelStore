@@ -9,6 +9,10 @@ class ApplicationLayerConnection:
 
     def send(self, client_id, payload):
         topic = "/" + str(client_id)
+
+        #workaround for revceive bug:
+        payload = payload + "\0"
+
         publish.single(topic, payload=payload, hostname=self._hostname)
 
 
