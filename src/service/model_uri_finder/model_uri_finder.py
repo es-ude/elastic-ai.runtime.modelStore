@@ -26,6 +26,7 @@ class ModelUriFinder:
         ns = self._namespace
         graph = Graph()
 
+        graph.add((ns.Digits, ns.ModelType, ns.Classification))
         graph.add((ns.Sine, ns.ModelType, ns.Regression))
 
         return graph

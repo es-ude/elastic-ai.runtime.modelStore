@@ -90,3 +90,44 @@ msc.register_model(model_info.model_uri, REG_MODEL_NAME)
 # end mlflow run
 
 mlflow.end_run()
+
+
+# try again with a bigger model
+
+mlflow.start_run()
+mlflow.tensorflow.autolog(every_n_iter=100, log_models=False)
+
+model = tf.keras.Sequential()
+model.add(tf.keras.layers.Dense(32, activation="relu", input_shape=(1,)))
+model.add(tf.keras.layers.Dense(32, activation="relu"))
+model.add(tf.keras.layers.Dense(32, activation="relu"))
+model.add(tf.keras.layers.Dense(1))
+model.compile(optimizer="adam", loss="mse", metrics=["mae"])
+
+model.fit(x_train, y_train, epochs=500, batch_size=64, validation_data=(x_validate, y_validate))
+model.save(MODEL_TF)
+
+
+def representative_dataset():
+    for i in range(500):
+        yield [x_train[i].reshape(1, 1)]
+
+
+converter = tf.lite.TFLiteConverter.from_saved_model(MODEL_TF)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
+converter.inference_input_type = tf.int8
+converter.inference_output_type = tf.int8
+converter.representative_dataset = representative_dataset
+model_tflite = converter.convert()
+
+with open(MODEL_TFLITE, "wb") as file:
+    file.write(model_tflite)
+
+msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Digits)
+msc.log_predicate(msc.ServiceNamespace.Input, msc.ServiceNamespace.Float)
+msc.log_predicate(msc.ServiceNamespace.Output, msc.ServiceNamespace.Float)
+model_info = mlflow_tflite.log_model(model_tflite, "model")
+msc.register_model(model_info.model_uri, REG_MODEL_NAME)
+
+mlflow.end_run()
