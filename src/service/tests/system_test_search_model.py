@@ -32,8 +32,10 @@ class SystemTestSearchModel(unittest.TestCase):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
 
     def _deliver(self, client, userdata, message):
-        #todo: checken, on die gesendete URI die richtige ist.
-        self.assertEqual("http://platzhalter.de/hello_world_model_3", bytes.decode(message.payload))
+        self.assertEqual(
+            b"model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10\0",
+            message.payload
+        )
         self._received_model_uri = True
         _thread.exit()
 
@@ -45,15 +47,20 @@ class SystemTestSearchModel(unittest.TestCase):
         problem_graph.add((problem_description, ServiceNamespace.Predict, ServiceNamespace.Sine))
         problem_graph.add((problem_description, ServiceNamespace.Input, ServiceNamespace.Float))
         problem_graph.add((problem_description, ServiceNamespace.Output, ServiceNamespace.Float))
-        problem_graph.add((problem_description, ServiceNamespace.Size, Literal(1100, datatype=XSD.integer)))
-        problem_graph.add((problem_description, ServiceNamespace.Accuracy, Literal(0.9, datatype=XSD.double)))
+        problem_graph.add((problem_description, ServiceNamespace.Size, Literal(2400, datatype=XSD.integer)))
+        problem_graph.add((problem_description, ServiceNamespace.MeanAbsoluteError, Literal(0.3, datatype=XSD.double)))
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         message = str(CLIENT_ID) + "$" + serialized_graph
         publish.single("/service/searchModel", message, hostname=PUBLIC_HOSTNAME)
 
+    def _set_up_model_store(self):
+        self._model_store = SetUpModelStore()
+        self._model_store.set_up()
+        self.addClassCleanup(self._model_store.cleanup_server)
 
     def test_start_monitor_and_send_search_request(self):
+        self._set_up_model_store()
         self._start_service()
         self._start_client_with_callback(self._deliver)
         time.sleep(0.5)

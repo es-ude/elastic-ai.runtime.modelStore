@@ -34,7 +34,7 @@ class SystemTestGetModel(unittest.TestCase):
         return model
 
     def _deliver(self, client, userdata, message):
-        model_url = message.payload
+        model_url = message.payload[:-1]
         res = requests.get(model_url)
         res.raise_for_status()
         correct_model = self._get_correct_model()

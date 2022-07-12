@@ -19,12 +19,12 @@ class TestModelFinder(unittest.TestCase):
 
     def test_simple_query(self):
         correct_query = """
-        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace#>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Predict service_namespace:Sine .
         }
-        ORDER BY DESC(?Accuracy)
+        ORDER BY ASC(?MeanAbsoluteError)
         """
         self._graph.add((self._test_model, ServiceNamespace.Predict, ServiceNamespace.Sine))
         test_query_result = self._model_finder.create_query(self._graph)
@@ -35,7 +35,7 @@ class TestModelFinder(unittest.TestCase):
 
     def test_query_with_size(self):
         correct_query = """
-        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace#>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Size ?Size .
@@ -52,7 +52,7 @@ class TestModelFinder(unittest.TestCase):
 
     def test_query_with_accuracy(self):
         correct_query = """
-        PREFIX service_namespace: <http://platzhalter.de/service_namespace>
+        PREFIX service_namespace: <http://platzhalter.de/service_namespace#>
         SELECT DISTINCT ?Model
         WHERE {
             ?Model service_namespace:Accuracy ?Accuracy .
@@ -83,7 +83,7 @@ class TestModelFinder(unittest.TestCase):
         problem_graph.add((problem_description, ServiceNamespace.Output, ServiceNamespace.Float))
         serialized_graph = problem_graph.serialize(format="json-ld")
 
-        self._model_finder._set_graph(self._graph)
+        self._model_finder._model_graph = self._graph
         returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
@@ -109,7 +109,7 @@ class TestModelFinder(unittest.TestCase):
         problem_graph.add((problem_description, ServiceNamespace.Accuracy, Literal(0.8, datatype=XSD.double)))
         serialized_graph = problem_graph.serialize(format="json-ld")
 
-        self._model_finder._set_graph(self._graph)
+        self._model_finder._model_graph = self._graph
         returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
@@ -132,7 +132,7 @@ class TestModelFinder(unittest.TestCase):
 
         serialized_graph = problem_graph.serialize(format="json-ld")
 
-        self._model_finder._set_graph(self._graph)
+        self._model_finder._model_graph = self._graph
         returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)
@@ -157,7 +157,7 @@ class TestModelFinder(unittest.TestCase):
 
         serialized_graph = problem_graph.serialize(format="json-ld")
 
-        self._model_finder._set_graph(self._graph)
+        self._model_finder._model_graph = self._graph
         returned_model_uri = self._model_finder.search_for_model(serialized_graph)
 
         self.assertEqual(returned_model_uri, self._test_model)

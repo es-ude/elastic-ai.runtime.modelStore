@@ -15,8 +15,9 @@ class ServiceNamespace(DefinedNamespace):
 
     Predict: URIRef  #  A Model can predict something
     Sine: URIRef  #  Sine function
-    Digits: URIRef
+    Digits: URIRef # MNIST digit classification
 
+    # Evaluation metrics
     Accuracy: URIRef
     MeanAbsoluteError: URIRef
 
@@ -35,6 +36,7 @@ def register_model(model_uri, name):
     if "hash" not in run.data.tags:
         raise Exception("Can't register model without hash")
 
+    client.set_model_version_tag(version.name, version.version, "hash", run.data.tags["hash"])
     model_uri = f"model:{run.data.tags['hash']}"
     model_ref = URIRef(model_uri)
 
@@ -59,7 +61,7 @@ def register_model(model_uri, name):
 
 def log_predicate(predicate, object):
     client = mlflow.tracking.MlflowClient()
-    active_run = client.get_run(mlflow.active_run().info.run_id)
+    active_run = client.get_run(mlflow.tracking.fluent._get_or_start_run().info.run_id)
     graph = Graph()
     if "graph" in active_run.data.tags:
         graph.parse(data=active_run.data.tags["graph"], format="json-ld")

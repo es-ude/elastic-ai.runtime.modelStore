@@ -31,7 +31,7 @@ class ModelServer:
         return model.data_url
 
     def serve(self, model_data_url: str):
-        self._connection.send(self._client_id, model_data_url)
+        self._connection.send(self._client_id, model_data_url.encode())
 
     def serve_model(self, arguments: list[str]):
         try:

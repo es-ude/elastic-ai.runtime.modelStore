@@ -106,16 +106,13 @@ class ModelUriFinder:
         for graph in graphs:
             full_graph += Graph().parse(data=graph, format="json-ld")
 
-        print(f"finder loading graph: {full_graph.serialize()}")
         self._model_graph = full_graph
 
     def search_for_model(self, serialized_request_graph)->URIRef:
         request_graph = Graph()
         request_graph.parse(data=serialized_request_graph, format="json-ld")
-        print(f"finder searching graph: {request_graph.serialize()}")
 
         request_query = self.create_query(request_graph)
-        print(f" query: {request_query}")
         qres = self._model_graph.query(request_query)
 
 
@@ -128,5 +125,4 @@ class ModelUriFinder:
 
         #Only the first result will be returned. Allways the one with the highest Accuracy
         for row in qres:
-            time.sleep(1)
             return row.Model

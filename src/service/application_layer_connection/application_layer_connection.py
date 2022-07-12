@@ -7,11 +7,11 @@ class ApplicationLayerConnection:
         self._config.read('configfile.ini')
         self._hostname = self._config['DEFAULT']['Hostname']
 
-    def send(self, client_id, payload):
+    def send(self, client_id, payload: bytes):
         topic = "/" + str(client_id)
 
         #workaround for revceive bug:
-        payload = str(payload) + "\0"
+        payload += b"\0"
 
         publish.single(topic, payload=payload, hostname=self._hostname)
 
