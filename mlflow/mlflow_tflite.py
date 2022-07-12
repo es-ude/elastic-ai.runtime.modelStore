@@ -3,6 +3,7 @@ import os
 import sys
 
 import mlflow
+import yaml
 from mlflow.models import Model
 from mlflow.tracking.artifact_utils import _download_artifact_from_uri
 from mlflow.utils.environment import (
@@ -17,7 +18,6 @@ from mlflow.utils.model_utils import (
     _get_flavor_configuration,
     _validate_and_prepare_target_save_path,
 )
-import yaml
 
 
 FLAVOR_NAME = "tflite"
@@ -33,21 +33,11 @@ def get_default_conda_env():
     return mlflow.tensorflow.get_default_conda_env()
 
 
-def log_model(tflite_model, artifact_path, registered_model_name=None, await_registration_for=300, **kwargs):
-    Model.log(
-        artifact_path, mlflow_tflite, tflite_model=tflite_model, **kwargs
-    )
-    if registered_model_name is not None:
-        run_id = mlflow.tracking.fluent.active_run().info.run_id
-        version = mlflow.register_model(
-            "runs:/%s/%s" % (run_id, artifact_path),
-            registered_model_name,
-            await_registration_for=await_registration_for,
-        )
-
-        model_hash = hashlib.sha256(tflite_model).digest()
-        client = mlflow.tracking.MlflowClient()
-        client.set_model_version_tag(version.name, version.version, "hash", model_hash.hex())
+def log_model(tflite_model, artifact_path, **kwargs):
+    model_hash = hashlib.sha256(tflite_model).digest()
+    mlflow.set_tag("hash", model_hash.hex())
+    mlflow.set_tag("size", len(tflite_model))
+    return Model.log(artifact_path, mlflow_tflite, tflite_model=tflite_model, **kwargs)
 
 
 def save_model(

@@ -7,12 +7,14 @@ import numpy as np
 import tensorflow as tf
 
 import mlflow_tflite
+import model_store_client as msc
 
 
 # start mlflow run
 
 mlflow.set_tracking_uri("http://localhost:5000")
 mlflow.start_run()
+mlflow.tensorflow.autolog(every_n_iter=100, log_models=False)
 
 
 # generate training data
@@ -76,9 +78,13 @@ with open(MODEL_TFLITE, "wb") as file:
 
 # log and register model
 
-REG_MODEL_NAME = "hello_world_trained"
+REG_MODEL_NAME = "hello_world"
 
-mlflow_tflite.log_model(model_tflite, "model", registered_model_name=REG_MODEL_NAME)
+msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Sine)
+msc.log_predicate(msc.ServiceNamespace.Input, msc.ServiceNamespace.Float)
+msc.log_predicate(msc.ServiceNamespace.Output, msc.ServiceNamespace.Float)
+model_info = mlflow_tflite.log_model(model_tflite, "model")
+msc.register_model(model_info.model_uri, REG_MODEL_NAME)
 
 
 # end mlflow run
