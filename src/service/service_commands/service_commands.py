@@ -27,8 +27,7 @@ class ServiceCommands:
         return self._store_connection.get_model(model_hash)
 
     def search_model(self, problem_graph):
-        #Todo: Graphs should be loaded from the model Store's metadata
-        store_graph = self._model_finder.load_graph()
-        self._model_finder._set_graph(store_graph)
+        store_graphs = self._store_connection.get_all_graphs()
+        self._model_finder.load_json_graphs(store_graphs)
         model_uri = self._model_finder.search_for_model(problem_graph)
         return model_uri

@@ -67,3 +67,8 @@ class MLflowStoreConnection:
 
         data_url, model_format = self._get_format_and_data_url(uri)
         return Model(version.name, int(version.version), model_format, data_url)
+
+    def get_all_graphs(self) -> list[str]:
+        all_versions = self.client.search_model_versions("")
+        all_graphs = [v.tags.get("graph") for v in all_versions if v.tags.get("graph") is not None]
+        return all_graphs

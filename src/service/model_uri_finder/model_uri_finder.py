@@ -66,26 +66,21 @@ class ModelUriFinder:
 
         return model_query
 
-    def load_graph(self):
-        path = "service/model_uri_finder/rdf_graphs/"
-        model_graph = Graph()
+    def load_json_graphs(self, graphs: list[str]):
+        full_graph = Graph()
+        for graph in graphs:
+            full_graph += Graph().parse(data=graph, format="json-ld")
 
-        for filename in os.listdir(path):
-            with open(path + filename, 'r') as f: # open in readonly mode
-                #+ : Union of both graphs
-                model_graph = model_graph + Graph().parse(data=f.read(), format="json-ld")
-                f.close()
-
-        return model_graph
-
-    def _set_graph(self, graph):
-        self._graph = graph
+        print(f"finder loading graph: {full_graph.serialize()}")
+        self._graph = full_graph
 
     def search_for_model(self, serialized_request_graph)->URIRef:
         request_graph = Graph()
         request_graph.parse(data=serialized_request_graph, format="json-ld")
+        print(f"finder searching graph: {request_graph.serialize()}")
 
         request_query = self.create_query(request_graph)
+        print(f" query: {request_query}")
         qres = self._graph.query(request_query)
 
 
