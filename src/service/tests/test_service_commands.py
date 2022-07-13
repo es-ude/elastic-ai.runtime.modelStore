@@ -1,7 +1,7 @@
 import unittest
 
-from service.mocks import MockStoreConnection, MockModel, MockModelUriFinder
 from service.errors import ModelDataNotFound
+from service.mocks import MockModel, MockModelUriFinder, MockStoreConnection
 from service.service_commands import ServiceCommands
 
 
@@ -16,7 +16,7 @@ class TestServiceCommands(unittest.TestCase):
 
     def test_get_model(self):
         model1 = MockModel()
-        model2 = self._service_commands.get_model("model:6d6f636b") # 'mock'
+        model2 = self._service_commands.get_model("model:6d6f636b")  # 'mock'
         self.assertEqual(model1.name, model2.name)
         self.assertEqual(model1.version, model2.version)
         self.assertEqual(model1.format, model2.format)
@@ -28,4 +28,4 @@ class TestServiceCommands(unittest.TestCase):
     def test_get_model_model_not_found(self):
         self.assertRaises(
             ModelDataNotFound, self._service_commands.get_model, "model:696e76616c6964"
-        ) # 'invalid'
+        )  # 'invalid'

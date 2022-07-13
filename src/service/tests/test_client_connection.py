@@ -8,6 +8,7 @@ from service.mocks import MockServiceCommands
 CLIENT_ID = 1
 PUBLIC_BROKER = "broker.hivemq.com"
 
+
 class TestModelServer(unittest.TestCase):
     def setUp(self):
         self._service_commands = MockServiceCommands()
@@ -22,12 +23,12 @@ class TestModelServer(unittest.TestCase):
     def test_get_model(self):
         self.assertEqual(
             "http://example.com/model/model.tflite", self._client._get_model("model:6d6f636b")
-        ) # 'mock'
+        )  # 'mock'
 
     def test_get_model_model_not_found(self):
         self.assertRaises(
             ModelDataNotFound, self._client._get_model, "model:696e76616c6964"
-        ) # 'invalid'
+        )  # 'invalid'
 
     def tearDown(self):
         pass

@@ -58,7 +58,9 @@ class MLflowStoreConnection:
         if len(matching_versions) == 0:
             raise ModelDataNotFound
         if len(matching_versions) > 1:
-            print(f"The store contains more than one model with the hash '{model_hash.hex()}', using the first model found")
+            print(
+                f"The store contains more than one model with the hash '{model_hash.hex()}', using the first model found"
+            )
 
         version = matching_versions[0]
         uri = self.client.get_model_version_download_uri(version.name, version.version)

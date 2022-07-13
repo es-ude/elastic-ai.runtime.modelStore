@@ -1,14 +1,13 @@
 import hashlib
-import sys
 from pathlib import Path
 from unittest import mock
 
 import mlflow
 import requests
 import yaml
-from mlflow.exceptions import MlflowException
 
 import service
+
 from .base_test_mlflow_store_connection import BaseTestMLflowStoreConnection
 
 
@@ -24,13 +23,17 @@ class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
         cls.addClassCleanup(cls._cleanup_mock)
 
         def search_model_versions(*_args, **_kwargs):
-            mock_model_version = mock_mlflow.entities.model_registry.ModelVersion("valid_model", 2, 0)
+            mock_model_version = mock_mlflow.entities.model_registry.ModelVersion(
+                "valid_model", 2, 0
+            )
             mock_model_version.name = "valid_model"
             mock_model_version.version = 1
             mock_model_version.tags = {"hash": cls.reference_model_hash.hex()}
             return [mock_model_version]
 
-        mock_mlflow.tracking.MlflowClient().search_model_versions.side_effect = search_model_versions
+        mock_mlflow.tracking.MlflowClient().search_model_versions.side_effect = (
+            search_model_versions
+        )
 
         def download_artifacts(dst_path, *_args, **_kwargs):
             path = Path(dst_path)
@@ -53,7 +56,9 @@ class TestMLflowStoreConnection(BaseTestMLflowStoreConnection):
         def get_model_version_download_uri(*_args, **_kwargs):
             return "http://example.com/model"
 
-        mock_mlflow.tracking.MlflowClient().get_model_version_download_uri.side_effect = get_model_version_download_uri
+        mock_mlflow.tracking.MlflowClient().get_model_version_download_uri.side_effect = (
+            get_model_version_download_uri
+        )
 
         model_info = mock.MagicMock()
         model_info.flavors = {"tflite": {"data": "model.tflite"}}

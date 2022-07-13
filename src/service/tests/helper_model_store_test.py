@@ -3,18 +3,17 @@ import signal
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 import mlflow
-from mlflow.exceptions import MlflowException
 
 
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
 
 
-class SetUpModelStore():
+class SetUpModelStore:
     # pylint: disable=consider-using-with,subprocess-popen-preexec-fn
     @classmethod
     def _start_mlflow_server(cls):
@@ -53,7 +52,6 @@ class SetUpModelStore():
             cwd=THIS_DIR / "support",
             check=True,
         )
-
 
     @classmethod
     def cleanup_server(cls):

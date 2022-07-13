@@ -1,18 +1,22 @@
-import unittest
-import monitor
-import threading
-import paho.mqtt.subscribe as subscribe
-import paho.mqtt.publish as publish
-import time
-from .helper_model_store_test import SetUpModelStore
-from pathlib import Path
 import _thread
+import time
+import unittest
+from pathlib import Path
+
+import paho.mqtt.publish as publish
+import paho.mqtt.subscribe as subscribe
 import requests
+
+import monitor
+
+from .helper_model_store_test import SetUpModelStore
+
 
 CLIENT_ID = 1
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
+
 
 class SystemTestGetModel(unittest.TestCase):
     def setUp(self):
@@ -23,7 +27,11 @@ class SystemTestGetModel(unittest.TestCase):
         _thread.start_new_thread(self._monitor.run, ())
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=PUBLIC_HOSTNAME, )
+        subscribe.callback(
+            callback,
+            "/" + str(CLIENT_ID),
+            hostname=PUBLIC_HOSTNAME,
+        )
 
     def _start_client_with_callback(self, callback):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
@@ -33,7 +41,7 @@ class SystemTestGetModel(unittest.TestCase):
             model = file.read()
         return model
 
-    def _deliver(self, client, userdata, message):
+    def _deliver(self, _client, _userdata, message):
         model_url = message.payload[:-1]
         res = requests.get(model_url)
         res.raise_for_status()
@@ -47,7 +55,7 @@ class SystemTestGetModel(unittest.TestCase):
     def _request_model_from_service(self):
         model_name = "model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10"
         seperator = "$"
-        message = str(CLIENT_ID)+seperator+model_name
+        message = str(CLIENT_ID) + seperator + model_name
         publish.single("/service/getModel", message, hostname=PUBLIC_HOSTNAME)
 
     def _set_up_model_store(self):

@@ -1,5 +1,6 @@
-from rdflib.namespace import Namespace, DefinedNamespace
 from rdflib import URIRef
+from rdflib.namespace import DefinedNamespace, Namespace
+
 
 class ServiceNamespace(DefinedNamespace):
     Model: URIRef  # A model.
@@ -12,8 +13,8 @@ class ServiceNamespace(DefinedNamespace):
     Size: URIRef  # Size of the Model
 
     Predict: URIRef  #  A Model can predict something
+    Digits: URIRef  # MNIST digit classification
     Sine: URIRef  #  Sine function
-    Digits: URIRef # MNIST digit classification
 
     # Evaluation metrics
     Accuracy: URIRef
@@ -21,5 +22,9 @@ class ServiceNamespace(DefinedNamespace):
 
     Optional: URIRef  #  Expressing, that a certain requirement is only optional
     Priority: URIRef  #  for expressing a predicate's priority
+
+    ModelType: URIRef
+    Classification: URIRef
+    Regression: URIRef
 
     _NS = Namespace("http://platzhalter.de/service_namespace#")

@@ -4,12 +4,12 @@ import unittest
 
 from paho.mqtt import publish, subscribe
 
-from service.request_handler import RequestHandler
 from service.mocks import MockServiceCommands
+from service.request_handler import RequestHandler
 
 
 CLIENT_ID = "15"
-SEPERATOR = "$"
+SEPARATOR = "$"
 PUBLIC_BROKER = "broker.hivemq.com"
 
 
@@ -32,7 +32,7 @@ class IntegrationTestRequestHandler(unittest.TestCase):
         _thread.start_new_thread(self._subscribe_helper, ())  # Helper thread to subscribe
 
     def _send_mqtt_request_for_model(self):
-        message = CLIENT_ID + SEPERATOR + "model:6d6f636b" # 'mock'
+        message = CLIENT_ID + SEPARATOR + "model:6d6f636b"  # 'mock'
         publish.single("/service/getModel", payload=message, hostname=PUBLIC_BROKER)
         time.sleep(1)
 

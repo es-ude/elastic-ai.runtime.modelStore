@@ -16,7 +16,7 @@ class MockServiceCommands:
         pass
 
     def get_model(self, model_uri):
-        if model_uri == "model:6d6f636b": # 'mock'
+        if model_uri == "model:6d6f636b":  # 'mock'
             return MockModel()
         else:
             raise ModelDataNotFound

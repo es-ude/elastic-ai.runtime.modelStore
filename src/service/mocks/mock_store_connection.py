@@ -1,5 +1,5 @@
-from service.mocks import MockModel
 from service.errors import ModelDataNotFound
+from service.mocks import MockModel
 
 
 class MockStoreConnection:

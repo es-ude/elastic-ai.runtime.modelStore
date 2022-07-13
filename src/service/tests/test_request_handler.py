@@ -1,7 +1,7 @@
 import unittest
 
-from service.request_handler import RequestHandler, IllegalInput
 from service.mocks import MockServiceCommands
+from service.request_handler import IllegalInput, RequestHandler
 
 
 PUBLIC_BROKER = "broker.hivemq.com"

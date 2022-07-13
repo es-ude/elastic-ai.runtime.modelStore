@@ -30,7 +30,7 @@ class RequestHandler:
             client_id, arguments = self._decode_message(message.payload)
 
             client = ModelServer(client_id, self._service_commands)
-            client_thread = threading.Thread(target=client.serve_model, args=(arguments, ))
+            client_thread = threading.Thread(target=client.serve_model, args=(arguments,))
             client_thread.start()
         except Exception:
             # can't send exception to client here since we don't know the right node id to send to
@@ -42,7 +42,7 @@ class RequestHandler:
             client_id, arguments = self._decode_message(message.payload)
 
             client = ModelServer(client_id, self._service_commands)
-            client_thread = threading.Thread(target=client.search_for_model, args=(arguments, ))
+            client_thread = threading.Thread(target=client.search_for_model, args=(arguments,))
             client_thread.start()
         except Exception:
             # can't send exception to client here since we don't know the right node id to send to
@@ -53,11 +53,17 @@ class RequestHandler:
         connection = ApplicationLayerConnection()
         get_model_thread = threading.Thread(
             target=connection.receive,
-            args=(self._on_message_get_model, "getModel", )
+            args=(
+                self._on_message_get_model,
+                "getModel",
+            ),
         )
         search_model_thread = threading.Thread(
             target=connection.receive,
-            args=(self._on_message_search_model, "searchModel", )
+            args=(
+                self._on_message_search_model,
+                "searchModel",
+            ),
         )
 
         get_model_thread.start()

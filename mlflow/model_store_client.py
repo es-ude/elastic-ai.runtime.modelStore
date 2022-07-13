@@ -5,7 +5,7 @@ from rdflib.namespace import DefinedNamespace, Namespace
 
 class ServiceNamespace(DefinedNamespace):
     Model: URIRef  # A model.
-    ModelName: URIRef  #  Name of the Model
+    ModelName: URIRef  # Name of the Model
 
     Input: URIRef  # Input for a Model
     Output: URIRef  # Output of the Model
@@ -13,16 +13,16 @@ class ServiceNamespace(DefinedNamespace):
 
     Size: URIRef  # Size of the Model
 
-    Predict: URIRef  #  A Model can predict something
-    Sine: URIRef  #  Sine function
-    Digits: URIRef # MNIST digit classification
+    Predict: URIRef  # A Model can predict something
+    Sine: URIRef  # Sine function
+    Digits: URIRef  # MNIST digit classification
 
     # Evaluation metrics
     Accuracy: URIRef
     MeanAbsoluteError: URIRef
 
-    Optional: URIRef  #  Expressing, that a certain requirement is only optional
-    Priority: URIRef  #  for expressing a predicate's priority
+    Optional: URIRef  # Expressing, that a certain requirement is only optional
+    Priority: URIRef  # for expressing a predicate's priority
 
     _NS = Namespace("http://platzhalter.de/service_namespace#")
 

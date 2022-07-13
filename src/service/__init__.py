@@ -1,5 +1,4 @@
-from . import client_connection
-from . import tests
-from . import mocks
+from . import client_connection, mocks, tests
+
 
 # from . import request_handlder

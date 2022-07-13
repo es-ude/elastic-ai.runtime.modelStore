@@ -6,11 +6,11 @@ from paho.mqtt import subscribe
 
 from service.client_connection import ModelServer
 from service.errors import ErrorCode
-from service.mocks import MockServiceCommands, MockModel
+from service.mocks import MockModel, MockServiceCommands
 
 
 CLIENT_ID = 1
-HOSTNAME= "broker.hivemq.com"
+HOSTNAME = "broker.hivemq.com"
 
 
 class IntegrationTestModelServer(unittest.TestCase):
@@ -21,26 +21,28 @@ class IntegrationTestModelServer(unittest.TestCase):
         self._verified = False
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=HOSTNAME)
+        subscribe.callback(callback, "/" + str(CLIENT_ID), hostname=HOSTNAME)
 
-    def _deliver(self, client, userdata, message):
+    def _deliver(self, _client, _userdata, message):
         self.assertEqual(message.payload, b"http://example.com/model/model.tflite\0")
-        self._veryfied = True
+        self._verified = True
         _thread.exit()
 
-    def _deliver_model_not_found(self, client, userdata, message):
-        self.assertEqual(message.payload, ("!" + str(int(ErrorCode.MODEL_DATA_NOT_FOUND))).encode() + b"\0")
+    def _deliver_model_not_found(self, _client, _userdata, message):
+        self.assertEqual(
+            message.payload, ("!" + str(int(ErrorCode.MODEL_DATA_NOT_FOUND))).encode() + b"\0"
+        )
         self._verified = True
         _thread.exit()
 
     def _start_client_with_callback(self, callback):
-        #return threading.Thread(target=self._subscribe_to_public_broker, args=(callback,))
+        # return threading.Thread(target=self._subscribe_to_public_broker, args=(callback,))
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
 
-    #Tests if a served model can be received
+    # Tests if a served model can be received
     def test_serve_empty_model(self):
         self._start_client_with_callback(self._deliver)
-        #clientThread.start()
+        # clientThread.start()
         time.sleep(0.5)
 
         self._client.serve(self._model.data_url)

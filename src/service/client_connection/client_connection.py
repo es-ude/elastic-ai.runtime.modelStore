@@ -42,7 +42,9 @@ class ModelServer:
             self._send_error(e.error_code)
         except Exception:
             self._send_error(ErrorCode.OTHER)
-            print(f"Exception while handling getModel request from {self._client_id}, arguments {arguments}:")
+            print(
+                f"Exception while handling getModel request from {self._client_id}, arguments {arguments}:"
+            )
             traceback.print_exc()
 
     def search_for_model(self, arguments: list[str]):
@@ -54,5 +56,7 @@ class ModelServer:
             self._send_error(e.error_code)
         except Exception:
             self._send_error(ErrorCode.OTHER)
-            print(f"Exception while handling searchModel request from {self._client_id}, arguments {arguments}:")
+            print(
+                f"Exception while handling searchModel request from {self._client_id}, arguments {arguments}:"
+            )
             traceback.print_exc()

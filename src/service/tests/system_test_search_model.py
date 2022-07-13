@@ -1,21 +1,24 @@
-import unittest
-import monitor
-import threading
-import paho.mqtt.subscribe as subscribe
-import paho.mqtt.publish as publish
-import time
-from .helper_model_store_test import SetUpModelStore
-from pathlib import Path
 import _thread
-import requests
-from rdflib import Graph, URIRef, Literal, RDF
-from service.service_namespace import ServiceNamespace
+import time
+import unittest
+from pathlib import Path
+
+import paho.mqtt.publish as publish
+import paho.mqtt.subscribe as subscribe
+from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import XSD
+
+import monitor
+from service.service_namespace import ServiceNamespace
+
+from .helper_model_store_test import SetUpModelStore
+
 
 CLIENT_ID = 1
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
+
 
 class SystemTestSearchModel(unittest.TestCase):
     def setUp(self):
@@ -26,7 +29,11 @@ class SystemTestSearchModel(unittest.TestCase):
         _thread.start_new_thread(self._monitor.run, ())
 
     def _subscribe_to_public_broker(self, callback):
-        subscribe.callback(callback, "/"+str(CLIENT_ID), hostname=PUBLIC_HOSTNAME, )
+        subscribe.callback(
+            callback,
+            "/" + str(CLIENT_ID),
+            hostname=PUBLIC_HOSTNAME,
+        )
 
     def _start_client_with_callback(self, callback):
         _thread.start_new_thread(self._subscribe_to_public_broker, (callback,))
@@ -34,21 +41,29 @@ class SystemTestSearchModel(unittest.TestCase):
     def _deliver(self, client, userdata, message):
         self.assertEqual(
             b"model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10\0",
-            message.payload
+            message.payload,
         )
         self._received_model_uri = True
         _thread.exit()
 
     def _request_search_for_model(self):
-        #create graph for the problem:
+        # create graph for the problem:
         problem_graph = Graph()
         problem_graph.bind("service_namespace", ServiceNamespace)
         problem_description = URIRef("http://platzhalter.de/problem_description")
         problem_graph.add((problem_description, ServiceNamespace.Predict, ServiceNamespace.Sine))
         problem_graph.add((problem_description, ServiceNamespace.Input, ServiceNamespace.Float))
         problem_graph.add((problem_description, ServiceNamespace.Output, ServiceNamespace.Float))
-        problem_graph.add((problem_description, ServiceNamespace.Size, Literal(2400, datatype=XSD.integer)))
-        problem_graph.add((problem_description, ServiceNamespace.MeanAbsoluteError, Literal(0.3, datatype=XSD.double)))
+        problem_graph.add(
+            (problem_description, ServiceNamespace.Size, Literal(2400, datatype=XSD.integer))
+        )
+        problem_graph.add(
+            (
+                problem_description,
+                ServiceNamespace.MeanAbsoluteError,
+                Literal(0.3, datatype=XSD.double),
+            )
+        )
         serialized_graph = problem_graph.serialize(format="json-ld")
 
         message = str(CLIENT_ID) + "$" + serialized_graph
