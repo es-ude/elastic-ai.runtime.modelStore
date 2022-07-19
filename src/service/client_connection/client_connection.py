@@ -1,3 +1,4 @@
+import time
 import traceback
 
 from service.application_layer_connection import ApplicationLayerConnection
@@ -51,6 +52,7 @@ class ModelServer:
         try:
             problem_graph = self._decode_search_model(arguments)
             model_uri = self._service_commands.search_model(problem_graph)
+            time.sleep(0.5)
             self.serve(model_uri)
         except ModelStoreError as e:
             self._send_error(e.error_code)
