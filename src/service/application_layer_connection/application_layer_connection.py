@@ -12,9 +12,6 @@ class ApplicationLayerConnection:
     def send(self, client_id, payload: bytes):
         topic = "/" + str(client_id)
 
-        # workaround for receive bug:
-        payload += b"\0"
-
         publish.single(topic, payload=payload, hostname=self._hostname)
 
     def receive(self, callback, function: str):

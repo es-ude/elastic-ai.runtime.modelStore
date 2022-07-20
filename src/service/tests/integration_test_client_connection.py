@@ -24,13 +24,13 @@ class IntegrationTestModelServer(unittest.TestCase):
         subscribe.callback(callback, "/" + str(CLIENT_ID), hostname=HOSTNAME)
 
     def _deliver(self, _client, _userdata, message):
-        self.assertEqual(message.payload, b"http://example.com/model/model.tflite\0")
+        self.assertEqual(message.payload, b"http://example.com/model/model.tflite")
         self._verified = True
         _thread.exit()
 
     def _deliver_model_not_found(self, _client, _userdata, message):
         self.assertEqual(
-            message.payload, ("!" + str(int(ErrorCode.MODEL_DATA_NOT_FOUND))).encode() + b"\0"
+            message.payload, ("!" + str(int(ErrorCode.MODEL_DATA_NOT_FOUND))).encode()
         )
         self._verified = True
         _thread.exit()

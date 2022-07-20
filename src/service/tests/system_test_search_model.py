@@ -40,7 +40,7 @@ class SystemTestSearchModel(unittest.TestCase):
 
     def _deliver(self, client, userdata, message):
         self.assertEqual(
-            b"model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10\0",
+            b"model:c67f1c6e5b93d5ee9d9948146357f68c0b28f39f572215f81c191dabda429e10",
             message.payload,
         )
         self._received_model_uri = True
