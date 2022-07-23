@@ -70,7 +70,7 @@ class SystemTestGetModel(unittest.TestCase):
         time.sleep(0.5)
 
         self._request_model_from_service()
-        time.sleep(0.5)
+        time.sleep(2)
         self.assertTrue(self._received_model)
 
     def tearDown(self) -> None:
