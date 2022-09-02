@@ -12,7 +12,7 @@ import monitor
 from .helper_model_store_test import SetUpModelStore
 
 
-CLIENT_ID = 1
+CLIENT_ID = 2
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
@@ -42,7 +42,7 @@ class SystemTestGetModel(unittest.TestCase):
         return model
 
     def _deliver(self, _client, _userdata, message):
-        model_url = message.payload[:-1]
+        model_url = message.payload
         res = requests.get(model_url)
         res.raise_for_status()
         correct_model = self._get_correct_model()

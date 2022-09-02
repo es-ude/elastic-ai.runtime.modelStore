@@ -14,7 +14,7 @@ from service.service_namespace import ServiceNamespace
 from .helper_model_store_test import SetUpModelStore
 
 
-CLIENT_ID = 1
+CLIENT_ID = 3
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
@@ -81,7 +81,7 @@ class SystemTestSearchModel(unittest.TestCase):
         time.sleep(0.5)
 
         self._request_search_for_model()
-        time.sleep(0.5)
+        time.sleep(2)
         self.assertTrue(self._received_model_uri)
 
     def tearDown(self) -> None:
