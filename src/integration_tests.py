@@ -1,3 +1,4 @@
+import sys
 import unittest
 
 import service
@@ -14,3 +15,4 @@ suite.addTests(loader.loadTestsFromModule(service.tests.integration_test_model_f
 
 runner = unittest.TextTestRunner(verbosity=3)
 result = runner.run(suite)
+sys.exit(not result.wasSuccessful())
