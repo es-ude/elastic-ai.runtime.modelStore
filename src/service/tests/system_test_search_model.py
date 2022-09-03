@@ -81,7 +81,7 @@ class SystemTestSearchModel(unittest.TestCase):
         time.sleep(0.5)
 
         self._request_search_for_model()
-        time.sleep(2)
+        time.sleep(4)
         self.assertTrue(self._received_model_uri)
 
     def tearDown(self) -> None:
