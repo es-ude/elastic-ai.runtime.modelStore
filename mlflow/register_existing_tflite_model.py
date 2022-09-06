@@ -17,7 +17,7 @@ with open("hello_world.tflite", "rb") as f:
 
 REG_MODEL_NAME = "existing_hello_world"
 
-msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Digits)
+msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Sine)
 msc.log_predicate(msc.ServiceNamespace.Input, msc.ServiceNamespace.Float)
 msc.log_predicate(msc.ServiceNamespace.Output, msc.ServiceNamespace.Float)
 model_info = mlflow_tflite.log_model(model, "model")
