@@ -26,5 +26,5 @@ jobs:
         run: pip install -r test-requirements.txt
 
       - name: Run System Tests
-        run: python system_tests.py
+        run: python system_test.py
         working-directory: src
