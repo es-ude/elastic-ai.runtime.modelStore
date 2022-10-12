@@ -1,4 +1,4 @@
-mlflow==1.2.0
+mlflow==1.28.0
 paho-mqtt
 pyyaml==6.0
 rdflib
