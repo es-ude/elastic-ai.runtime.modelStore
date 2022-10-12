@@ -52,7 +52,7 @@ model.compile(optimizer="adam", loss="mse", metrics=["mae"])
 MODEL_TF = "models/model"
 MODEL_TFLITE = "models/model.tflite"
 
-model.fit(x_train, y_train, epochs=500, batch_size=64, validation_data=(x_validate, y_validate))
+model.fit(x_train, y_train, epochs=700, batch_size=64, validation_data=(x_validate, y_validate))
 model.save(MODEL_TF)
 
 
@@ -104,7 +104,7 @@ model.add(tf.keras.layers.Dense(32, activation="relu"))
 model.add(tf.keras.layers.Dense(1))
 model.compile(optimizer="adam", loss="mse", metrics=["mae"])
 
-model.fit(x_train, y_train, epochs=500, batch_size=64, validation_data=(x_validate, y_validate))
+model.fit(x_train, y_train, epochs=700, batch_size=64, validation_data=(x_validate, y_validate))
 model.save(MODEL_TF)
 
 
@@ -124,7 +124,7 @@ model_tflite = converter.convert()
 with open(MODEL_TFLITE, "wb") as file:
     file.write(model_tflite)
 
-msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Digits)
+msc.log_predicate(msc.ServiceNamespace.Predict, msc.ServiceNamespace.Sine)
 msc.log_predicate(msc.ServiceNamespace.Input, msc.ServiceNamespace.Float)
 msc.log_predicate(msc.ServiceNamespace.Output, msc.ServiceNamespace.Float)
 model_info = mlflow_tflite.log_model(model_tflite, "model")
