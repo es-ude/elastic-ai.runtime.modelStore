@@ -1,0 +1,30 @@
+name: System tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  system_tests:
+    name: system_tests on ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10" ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Requirements
+        run: pip install -r test-requirements.txt
+
+      - name: Run System Tests
+        run: python system_tests.py
+        working-directory: src
