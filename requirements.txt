@@ -3,10 +3,6 @@ paho-mqtt
 pyyaml==6.0
 rdflib
 requests
-
-pyyaml
-rdflib
-
 service
 numpy
 tensorflow
