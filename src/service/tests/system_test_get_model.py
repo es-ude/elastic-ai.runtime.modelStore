@@ -20,7 +20,7 @@ TEST_MLFLOW_URI = "http://localhost:6000"
 
 class SystemTestGetModel(unittest.TestCase):
     def setUp(self):
-        self._monitor = monitor.Monitor(TEST_MLFLOW_URI)
+        self._monitor = monitor.Monitor(TEST_MLFLOW_URI, None)
         self._received_model = False
 
     def _start_service(self):

@@ -1,4 +1,5 @@
 import hashlib
+from urllib.parse import urlparse, urlunparse
 
 import mlflow
 import requests
@@ -40,8 +41,22 @@ class MLflowStoreConnection:
         path, model_format = path_and_format
         return f"{artifact_url}/{path}", model_format
 
-    def __init__(self, mlflow_uri):
+    def _resolve_artifact_uri(self, artifact_uri):
+        uri = MlflowArtifactsRepository.resolve_uri(artifact_uri, mlflow.get_tracking_uri())
+        if self.mlflow_public_netloc is not None:
+            uri = urlparse(uri)
+            uri = uri._replace(netloc=self.mlflow_public_netloc)
+            uri = urlunparse(uri)
+        return uri
+
+    def __init__(self, mlflow_uri, mlflow_public_uri):
         mlflow.set_tracking_uri(mlflow_uri)
+
+        if mlflow_public_uri is not None:
+            self.mlflow_public_netloc = urlparse(mlflow_public_uri).netloc
+        else:
+            self.mlflow_public_netloc = None
+
         self.client = mlflow.tracking.MlflowClient()
 
     def get_model(self, model_hash: bytes) -> Model:
@@ -65,7 +80,7 @@ class MLflowStoreConnection:
         version = matching_versions[0]
         uri = self.client.get_model_version_download_uri(version.name, version.version)
         if uri.startswith("mlflow-artifacts"):
-            uri = MlflowArtifactsRepository.resolve_uri(uri, mlflow.get_tracking_uri())
+            uri = self._resolve_artifact_uri(uri)
 
         data_url, model_format = self._get_format_and_data_url(uri)
         return Model(version.name, int(version.version), model_format, data_url)

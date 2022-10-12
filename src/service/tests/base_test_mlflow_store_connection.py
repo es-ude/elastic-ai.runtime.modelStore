@@ -12,7 +12,7 @@ class BaseTestMLflowStoreConnection(unittest.TestCase):
     reference_model_hash = None
 
     def setUp(self):
-        self.store_connection = MLflowStoreConnection(self.mlflow_uri)
+        self.store_connection = MLflowStoreConnection(self.mlflow_uri, None)
 
     def test_get_existing_model(self):
         model = self.store_connection.get_model(self.reference_model_hash)
