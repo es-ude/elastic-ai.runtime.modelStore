@@ -1,5 +1,5 @@
 mlflow
 paho-mqtt
-pyyaml
+pyyaml==6.0
 rdflib
 requests
