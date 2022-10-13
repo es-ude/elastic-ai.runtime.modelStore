@@ -78,10 +78,10 @@ class SystemTestSearchModel(unittest.TestCase):
         self._set_up_model_store()
         self._start_service()
         self._start_client_with_callback(self._deliver)
-        time.sleep(0.5)
+        time.sleep(2)
 
         self._request_search_for_model()
-        time.sleep(4)
+        time.sleep(5)
         self.assertTrue(self._received_model_uri)
 
     def tearDown(self) -> None:

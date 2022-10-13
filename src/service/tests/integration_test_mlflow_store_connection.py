@@ -66,7 +66,7 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
     @classmethod
     def _cleanup_server(cls):
         os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGINT)
-        cls.mlflow_server.wait(timeout=10)
+        cls.mlflow_server.wait(timeout=20)
         if cls.mlflow_server.returncode is None:
             os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGKILL)
 

@@ -43,19 +43,19 @@ class IntegrationTestModelServer(unittest.TestCase):
     def test_serve_empty_model(self):
         self._start_client_with_callback(self._deliver)
         # clientThread.start()
-        time.sleep(0.5)
+        time.sleep(2)
 
         self._client.serve(self._model.data_url)
 
     def test_client_receives_error_after_requesting_unknown_model(self):
         self._start_client_with_callback(self._deliver_model_not_found)
-        time.sleep(0.5)
+        time.sleep(2)
 
         self._client.serve_model(
             # b"invalid hash".ljust(32, b"-")
             ["model:696e76616c696420686173682d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d"]
         )
-        time.sleep(1)
+        time.sleep(2)
         self.assertTrue(self._verified)
 
     def tearDown(self):

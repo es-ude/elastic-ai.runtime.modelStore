@@ -34,14 +34,14 @@ class IntegrationTestRequestHandler(unittest.TestCase):
     def _send_mqtt_request_for_model(self):
         message = CLIENT_ID + SEPARATOR + "model:6d6f636b"  # 'mock'
         publish.single("/service/getModel", payload=message, hostname=PUBLIC_BROKER)
-        time.sleep(1)
+        time.sleep(2)
 
     def test_subscribe(self):
         self._call_wait_for_elastic_node()
         self._subscribe_to_public_broker()
-        time.sleep(1)
+        time.sleep(2)
 
         self._send_mqtt_request_for_model()
-        time.sleep(0.5)
+        time.sleep(2)
 
         self.assertTrue(self._arrived)
