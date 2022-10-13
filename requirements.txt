@@ -1,8 +1,8 @@
-mlflow==1.28.0
-paho-mqtt
+mlflow==1.29.0
+paho-mqtt==1.6.1
 pyyaml==6.0
-rdflib
+rdflib==6.2.0
 requests
-service
-numpy
-tensorflow
+service==0.6.0
+numpy==1.23.4
+tensorflow==2.10.0
