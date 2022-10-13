@@ -67,10 +67,10 @@ class SystemTestGetModel(unittest.TestCase):
         self._set_up_model_store()
         self._start_service()
         self._start_client_with_callback(self._deliver)
-        time.sleep(2)
+        time.sleep(5)
 
         self._request_model_from_service()
-        time.sleep(3)
+        time.sleep(5)
         self.assertTrue(self._received_model)
 
     def tearDown(self) -> None:
