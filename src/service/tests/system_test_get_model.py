@@ -65,7 +65,9 @@ class SystemTestGetModel(unittest.TestCase):
 
     def test_start_monitor_and_send_model_request(self):
         self._set_up_model_store()
+        time.sleep(10)
         self._start_service()
+        time.sleep(10)
         self._start_client_with_callback(self._deliver)
         time.sleep(10)
 
