@@ -13,7 +13,6 @@ from service.service_namespace import ServiceNamespace
 
 from .helper_model_store_test import SetUpModelStore
 
-
 CLIENT_ID = 3
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent

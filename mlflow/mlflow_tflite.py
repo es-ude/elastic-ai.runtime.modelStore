@@ -19,7 +19,6 @@ from mlflow.utils.model_utils import (
     _validate_and_prepare_target_save_path,
 )
 
-
 FLAVOR_NAME = "tflite"
 
 mlflow_tflite = sys.modules[__name__]
@@ -41,12 +40,12 @@ def log_model(tflite_model, artifact_path, **kwargs):
 
 
 def save_model(
-    tflite_model,
-    path,
-    mlflow_model=None,
-    conda_env=None,
-    pip_requirements=None,
-    extra_pip_requirements=None,
+        tflite_model,
+        path,
+        mlflow_model=None,
+        conda_env=None,
+        pip_requirements=None,
+        extra_pip_requirements=None,
 ):
     _validate_and_prepare_target_save_path(path)
 

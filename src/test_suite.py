@@ -2,7 +2,6 @@ import unittest
 
 import service
 
-
 loader = unittest.TestLoader()
 suite = unittest.TestSuite()
 

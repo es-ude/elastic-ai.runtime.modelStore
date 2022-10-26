@@ -5,7 +5,6 @@ import mlflow
 import mlflow_tflite
 import model_store_client as msc
 
-
 mlflow.set_tracking_uri(sys.argv[1])
 
 with open("hello_world.tflite", "rb") as file:

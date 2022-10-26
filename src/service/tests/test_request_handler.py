@@ -3,8 +3,8 @@ import unittest
 from service.mocks import MockServiceCommands
 from service.request_handler import IllegalInput, RequestHandler
 
-
 PUBLIC_BROKER = "broker.hivemq.com"
+
 
 # pylint: disable=protected-access
 class TestRequestHandler(unittest.TestCase):

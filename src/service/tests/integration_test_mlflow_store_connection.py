@@ -12,7 +12,6 @@ from mlflow.exceptions import MlflowException
 
 from .base_test_mlflow_store_connection import BaseTestMLflowStoreConnection
 
-
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
 

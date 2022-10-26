@@ -11,7 +11,6 @@ import monitor
 
 from .helper_model_store_test import SetUpModelStore
 
-
 CLIENT_ID = 2
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent

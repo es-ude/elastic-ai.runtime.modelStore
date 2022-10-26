@@ -3,7 +3,6 @@ import mlflow
 import mlflow_tflite
 import model_store_client as msc
 
-
 # start mlflow run
 
 mlflow.set_tracking_uri("http://localhost:5000")

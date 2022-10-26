@@ -7,7 +7,6 @@ from paho.mqtt import publish, subscribe
 from service.mocks import MockServiceCommands
 from service.request_handler import RequestHandler
 
-
 CLIENT_ID = "15"
 SEPARATOR = "$"
 PUBLIC_BROKER = "broker.hivemq.com"

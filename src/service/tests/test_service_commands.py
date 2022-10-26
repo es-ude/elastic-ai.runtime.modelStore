@@ -4,7 +4,6 @@ from service.errors import ModelDataNotFound
 from service.mocks import MockModel, MockModelUriFinder, MockStoreConnection
 from service.service_commands import ServiceCommands
 
-
 MLFLOW_URI = "http://localhost:6000"
 
 

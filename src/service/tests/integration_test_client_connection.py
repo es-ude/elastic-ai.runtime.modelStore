@@ -8,7 +8,6 @@ from service.client_connection import ModelServer
 from service.errors import ErrorCode
 from service.mocks import MockModel, MockServiceCommands
 
-
 CLIENT_ID = 1
 HOSTNAME = "broker.hivemq.com"
 

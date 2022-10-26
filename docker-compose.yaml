@@ -6,7 +6,7 @@ services:
     restart: always
     depends_on:
       - mlflow
-    command: ["--store", "http://mlflow:5000", "--store-public", "http://0.0.0.0:5000"]
+    command: [ "--store", "http://mlflow:5000", "--store-public", "http://0.0.0.0:5000" ]
   mlflow:
     build: ./mlflow
     restart: always

@@ -4,7 +4,6 @@ from rdflib.namespace import Namespace
 from service.errors import ModelUriNotFound
 from service.service_namespace import ServiceNamespace
 
-
 URI_STRING_IN_SPARQL_SYNTAX = "service_namespace:"
 
 
@@ -55,7 +54,7 @@ class ModelUriFinder:
         return model_query
 
     def _query_get_uri_in_sparql_syntax(self, uri: str):
-        return URI_STRING_IN_SPARQL_SYNTAX + uri[self._base_uri_length :]
+        return URI_STRING_IN_SPARQL_SYNTAX + uri[self._base_uri_length:]
 
     def _query_add_end(self, model_query, model_type):
         model_query += "}"
@@ -70,7 +69,7 @@ class ModelUriFinder:
         model_type = None
 
         for _, predicate, object in request_graph.triples(
-            (URIRef("http://platzhalter.de/problem_description"), None, None)
+                (URIRef("http://platzhalter.de/problem_description"), None, None)
         ):
             p_string = self._query_get_uri_in_sparql_syntax(predicate)
 
