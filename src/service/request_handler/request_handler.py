@@ -27,6 +27,8 @@ class RequestHandler:
 
     def _on_message_get_model(self, client, _userdata, message):
         try:
+            print("Get model Request")
+
             client_id, arguments = self._decode_message(message.payload)
 
             client = ModelServer(client_id, self._service_commands)
@@ -39,6 +41,8 @@ class RequestHandler:
 
     def _on_message_search_model(self, client, _userdata, message):
         try:
+            print("Search model Request")
+
             client_id, arguments = self._decode_message(message.payload)
 
             client = ModelServer(client_id, self._service_commands)

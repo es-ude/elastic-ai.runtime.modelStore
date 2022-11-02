@@ -109,12 +109,13 @@ class ModelUriFinder:
 
         request_query = self.create_query(request_graph)
         qres = self._model_graph.query(request_query)
-
+        print(len(qres))
         if len(qres) == 0:
             # try again, this time without optional requirements.
             request_query = self.create_query(request_graph, use_optional_requirements=False)
             qres = self._model_graph.query(request_query)
             if len(qres) == 0:
+                print("Found no Model")
                 raise ModelUriNotFound
 
         # Only the first result will be returned. Always the one with the highest Accuracy
