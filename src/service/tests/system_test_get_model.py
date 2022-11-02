@@ -11,7 +11,6 @@ import monitor
 
 from .helper_model_store_test import SetUpModelStore
 
-
 CLIENT_ID = 2
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
@@ -21,6 +20,7 @@ TEST_MLFLOW_URI = "http://localhost:6000"
 class SystemTestGetModel(unittest.TestCase):
     def setUp(self):
         self._monitor = monitor.Monitor(TEST_MLFLOW_URI, None)
+        time.sleep(10)
         self._received_model = False
 
     def _start_service(self):
@@ -65,12 +65,14 @@ class SystemTestGetModel(unittest.TestCase):
 
     def test_start_monitor_and_send_model_request(self):
         self._set_up_model_store()
+        time.sleep(10)
         self._start_service()
+        time.sleep(10)
         self._start_client_with_callback(self._deliver)
-        time.sleep(0.5)
+        time.sleep(10)
 
         self._request_model_from_service()
-        time.sleep(2)
+        time.sleep(10)
         self.assertTrue(self._received_model)
 
     def tearDown(self) -> None:

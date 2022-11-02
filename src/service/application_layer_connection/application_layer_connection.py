@@ -18,8 +18,8 @@ class ApplicationLayerConnection:
         topic = ""
 
         if function == "getModel":
-            topic = "/service/getModel"
+            topic = "eip://uni-due.de/es/enV5/service/getModel"
         elif function == "searchModel":
-            topic = "/service/searchModel"
+            topic = "eip://uni-due.de/es/enV5/service/searchModel"
 
         subscribe.callback(callback, topic, hostname=self._hostname)

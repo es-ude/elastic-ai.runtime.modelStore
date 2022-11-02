@@ -12,7 +12,6 @@ from mlflow.exceptions import MlflowException
 
 from .base_test_mlflow_store_connection import BaseTestMLflowStoreConnection
 
-
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
 
@@ -66,7 +65,7 @@ class IntegrationTestMLflowStoreConnection(BaseTestMLflowStoreConnection):
     @classmethod
     def _cleanup_server(cls):
         os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGINT)
-        cls.mlflow_server.wait(timeout=10)
+        cls.mlflow_server.wait(timeout=20)
         if cls.mlflow_server.returncode is None:
             os.killpg(os.getpgid(cls.mlflow_server.pid), signal.SIGKILL)
 

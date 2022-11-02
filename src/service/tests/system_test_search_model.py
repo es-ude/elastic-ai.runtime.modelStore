@@ -13,7 +13,6 @@ from service.service_namespace import ServiceNamespace
 
 from .helper_model_store_test import SetUpModelStore
 
-
 CLIENT_ID = 3
 PUBLIC_HOSTNAME = "broker.hivemq.com"
 THIS_DIR = Path(__file__).resolve().parent
@@ -78,10 +77,10 @@ class SystemTestSearchModel(unittest.TestCase):
         self._set_up_model_store()
         self._start_service()
         self._start_client_with_callback(self._deliver)
-        time.sleep(0.5)
+        time.sleep(10)
 
         self._request_search_for_model()
-        time.sleep(4)
+        time.sleep(10)
         self.assertTrue(self._received_model_uri)
 
     def tearDown(self) -> None:

@@ -8,7 +8,6 @@ from pathlib import Path
 
 import mlflow
 
-
 THIS_DIR = Path(__file__).resolve().parent
 TEST_MLFLOW_URI = "http://localhost:6000"
 

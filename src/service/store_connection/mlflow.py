@@ -9,7 +9,6 @@ from mlflow.store.artifact.mlflow_artifacts_repo import MlflowArtifactsRepositor
 from service.entities import Model
 from service.errors import IllegalInput, ModelDataNotFound
 
-
 MODEL_STAGE = "None"
 
 

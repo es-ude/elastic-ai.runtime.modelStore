@@ -4,7 +4,6 @@ from service.client_connection import ModelServer
 from service.errors import ModelDataNotFound
 from service.mocks import MockServiceCommands
 
-
 CLIENT_ID = 1
 PUBLIC_BROKER = "broker.hivemq.com"
 
